@@ -1,5 +1,5 @@
 using BudgetBuddy.Kernel;
-using BudgetBuddy.Kernel.Data;
+using BudgetBuddy.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
