@@ -1,6 +1,10 @@
 using BudgetBuddy.Kernel;
 using BudgetBuddy.Data;
 using Microsoft.EntityFrameworkCore;
+using BudgetBuddy.Transactions;
+using HealthChecks.UI.Client;
+using BudgetBuddy.Kernel.Messaging;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContextFactory<BBDbContext>(options =>
@@ -11,6 +15,20 @@ builder.Services.AddDbContextFactory<BBDbContext>(options =>
 builder.Services.AddOpenApi();
 
 builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+
+builder.Services.Scan(scan => scan.FromAssembliesOf(typeof(Program))
+            .AddClasses(classes => classes.AssignableTo(typeof(IQueryHandler<,>)), publicOnly: false)
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+            .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<>)), publicOnly: false)
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+            .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<,>)), publicOnly: false)
+                .AsImplementedInterfaces()
+                .WithScopedLifetime());
+
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<BBDbContext>();
 
 var app = builder.Build();
 
@@ -27,5 +45,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.MapHealthChecks("health", new HealthCheckOptions{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
 
+GetTransactionsEndpoint.MapEndpoint(app);
 app.Run();
