@@ -11,7 +11,7 @@ internal sealed class GetTransactionByIdEndpoint : IEndpoint
     {
         app.MapGet("/v1/transactions/{transactionId:int}", async (HttpContext httpContext,
         int transactionId,
-        IQueryHandler<GetTransactionByIdQuery, GetTransactionResponse> handler,
+        IQueryHandler<GetTransactionByIdQuery, GetTransactionResult> handler,
         CancellationToken cancellationToken) =>
         {
             try
@@ -23,6 +23,10 @@ internal sealed class GetTransactionByIdEndpoint : IEndpoint
             {
                 return Results.Problem("There was a problem retrieving Transactions.");
             }
-        });
+        })
+        .WithTags(Tags.Transactions)
+        .Accepts<GetTransactionByIdQuery>("Transactions")
+        .Produces<GetTransactionResult>()
+        .ProducesProblem(StatusCodes.Status404NotFound);
     }
 }

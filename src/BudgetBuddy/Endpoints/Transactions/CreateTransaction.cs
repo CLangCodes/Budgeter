@@ -20,6 +20,7 @@ internal sealed class CreateTransactionEndpoint : IEndpoint
                 cancellationToken).ConfigureAwait(false);
             return result.Match(Results.Ok, CustomResults.Problem);
         })
+        .Accepts<CreateTransactionCommand>("Transactions")
         .WithTags(Tags.Transactions)
         .Produces<int>()
         .ProducesProblem(StatusCodes.Status400BadRequest);
