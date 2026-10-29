@@ -9,6 +9,7 @@ public class BBDbContext(DbContextOptions<BBDbContext> options)
 {
     public DbSet<Transaction> Transactions => Set<Transaction>();
     public DbSet<Category> Categories => Set<Category>();
+    public DbSet<Expense> Expenses => Set<Expense>();
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
