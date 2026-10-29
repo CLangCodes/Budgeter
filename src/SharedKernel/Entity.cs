@@ -1,4 +1,4 @@
-﻿namespace BudgetBuddy.Kernel;
+﻿namespace SharedKernel;
 
 public abstract class Entity
 {
