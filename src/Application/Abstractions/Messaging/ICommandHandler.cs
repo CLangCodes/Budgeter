@@ -1,6 +1,6 @@
-﻿using BudgetBuddy.Kernel;
+﻿using SharedKernel;
 
-namespace BudgetBuddy.Kernel.Messaging;
+namespace Application.Abstractions.Messaging;
 
 public interface ICommandHandler<in TCommand>
     where TCommand : ICommand

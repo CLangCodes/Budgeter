@@ -50,3 +50,9 @@ public class Transaction : Entity
         Category = category;
     }
 }
+internal sealed class TransactionsNotFoundException : Exception
+{
+    public TransactionsNotFoundException() : base () { }
+    public TransactionsNotFoundException(string message) : base(message) { }
+    public TransactionsNotFoundException(string message, Exception innerException) : base(message, innerException) { }
+}

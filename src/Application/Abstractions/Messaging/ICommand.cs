@@ -1,4 +1,4 @@
-﻿namespace BudgetBuddy.Kernel.Messaging;
+﻿namespace Application.Abstractions.Messaging;
 
 public interface ICommand;
 

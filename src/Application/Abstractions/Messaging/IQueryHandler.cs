@@ -1,6 +1,6 @@
-﻿using BudgetBuddy.Kernel;
+﻿using SharedKernel;
 
-namespace BudgetBuddy.Kernel.Messaging;
+namespace Application.Abstractions.Messaging;
 
 public interface IQueryHandler<in TQuery, TResponse>
     where TQuery : IQuery<TResponse>

@@ -1,10 +1,9 @@
-using BudgetBuddy.Kernel;
-using BudgetBuddy.Kernel.Api;
-using BudgetBuddy.Data;
-using BudgetBuddy.Kernel.Messaging;
+using SharedKernel;
+using Infrastructure.Data;
+using Application.Abstractions.Messaging;
 using Microsoft.EntityFrameworkCore;
 
-namespace BudgetBuddy.Transactions;
+namespace Application.Transactions;
 
 internal sealed record GetTransactionsQuery() : IQuery<GetTransactionsResult>;
 internal sealed record TransactionDetail(int Id, int TransactionTypeId, string Description, decimal Amount, DateTime Date, string Category);
@@ -40,30 +39,23 @@ internal class GetTransactionQueryHandler : IQueryHandler<GetTransactionsQuery, 
     }
 }
 
-internal sealed class GetTransactionsEndpoint : IEndpoint
-{
-    public static void MapEndpoint(IEndpointRouteBuilder app)
-    {
-        app.MapGet("/v1/transactions/", async (HttpContext httpContext,
-        IQueryHandler<GetTransactionsQuery, GetTransactionsResult> handler,
-        CancellationToken cancellationToken) =>
-        {
-            try
-            {
-                var result = await handler.Handle(
-                    new GetTransactionsQuery(), cancellationToken).ConfigureAwait(false);
-                return Results.Ok(result.Value);                
-            } catch
-            {
-                return Results.Problem("There was a problem retrieving Transactions.");
-            }
-        });
-    }
-}
-
-internal sealed class TransactionsNotFoundException : Exception
-{
-    public TransactionsNotFoundException() : base () { }
-    public TransactionsNotFoundException(string message) : base(message) { }
-    public TransactionsNotFoundException(string message, Exception innerException) : base(message, innerException) { }
-}
+// internal sealed class GetTransactionsEndpoint : IEndpoint
+// {
+//     public static void MapEndpoint(IEndpointRouteBuilder app)
+//     {
+//         app.MapGet("/v1/transactions/", async (HttpContext httpContext,
+//         IQueryHandler<GetTransactionsQuery, GetTransactionsResult> handler,
+//         CancellationToken cancellationToken) =>
+//         {
+//             try
+//             {
+//                 var result = await handler.Handle(
+//                     new GetTransactionsQuery(), cancellationToken).ConfigureAwait(false);
+//                 return Results.Ok(result.Value);                
+//             } catch
+//             {
+//                 return Results.Problem("There was a problem retrieving Transactions.");
+//             }
+//         });
+//     }
+// }
