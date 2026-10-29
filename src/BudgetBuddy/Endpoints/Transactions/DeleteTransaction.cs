@@ -21,7 +21,7 @@ internal sealed class DeleteTransactionEndpoint : IEndpoint
             return result.Match(Results.NoContent, CustomResults.Problem);
         })
         .WithTags(Tags.Transactions)
-        .Accepts<DeleteTransactionCommand>("Transactions")
+        .Accepts<DeleteTransactionCommand>("application/json")
         .Produces(StatusCodes.Status204NoContent)
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .ProducesProblem(StatusCodes.Status404NotFound);

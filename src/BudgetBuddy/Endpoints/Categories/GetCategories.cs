@@ -21,7 +21,7 @@ internal sealed class GetCategoriesEndpoint : IEndpoint
                 return Results.Problem("There was a problem retrieving Categories.");
             }
         })
-        .Accepts<GetCategoriesQuery>("Categories")
+        .Accepts<GetCategoriesQuery>("application/json")
         .WithTags(Tags.Categories)
         .Produces<GetCategoriesResult>();
     }

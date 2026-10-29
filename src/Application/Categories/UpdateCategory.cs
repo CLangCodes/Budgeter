@@ -19,15 +19,14 @@ internal sealed class UpdateCategoryCommandHandler(IApplicationDbContext context
 {
     public async Task<Result> Handle(UpdateCategoryCommand command, CancellationToken cancellationToken)
     {
-        var Category = await context.Categories
+        var category = await context.Categories
             .SingleOrDefaultAsync(g => g.CategoryId == command.CategoryId, cancellationToken);
 
-        if (Category is null)
+        if (category is null)
             {return Result.Failure(CategoryErrors.NotFound(command.CategoryId));}
-        if (!Category.IsUserDefined)
+        if (!category.IsUserDefined)
             {return Result.Failure(CategoryErrors.NotUserDefined(command.CategoryId));}
-        Category.Update(
-            command.CategoryId,
+        category.Update(
             command.CategoryGroupName,
             command.CategoryName,
             command.Description);

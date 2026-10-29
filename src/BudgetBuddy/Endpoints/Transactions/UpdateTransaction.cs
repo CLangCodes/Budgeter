@@ -37,7 +37,7 @@ internal sealed class UpdateTransactionEndpoint : IEndpoint
                 cancellationToken).ConfigureAwait(false);
             return result.Match(Results.NoContent, CustomResults.Problem);
         })
-        .Accepts<UpdateTransactionCommand>("Transactions")
+        .Accepts<UpdateTransactionCommand>("application/json")
         .WithTags(Tags.Transactions)
         .Produces(StatusCodes.Status204NoContent)
         .ProducesProblem(StatusCodes.Status404NotFound);

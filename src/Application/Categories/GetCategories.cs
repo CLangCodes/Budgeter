@@ -10,7 +10,7 @@ public sealed record CategoryDetail(
     Guid CategoryId,
     bool IsUserDefined,
     string CategoryGroupName,
-    string GroupName,
+    string CategoryName,
     string Description
 );
 public sealed record GetCategoriesResult(List<CategoryDetail> Categories);

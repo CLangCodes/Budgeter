@@ -21,7 +21,7 @@ internal sealed class DeleteCategoryEndpoint : IEndpoint
             return result.Match(Results.NoContent, CustomResults.Problem);
         })
         .WithTags(Tags.Categories)
-        .Accepts<DeleteCategoryCommand>("Categories")
+        .Accepts<DeleteCategoryCommand>("application/json")
         .Produces(StatusCodes.Status204NoContent)
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .ProducesProblem(StatusCodes.Status404NotFound);

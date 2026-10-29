@@ -19,7 +19,7 @@ internal sealed class GetCategoryByIdQueryHandler(IApplicationDbContext context)
 {
     public async Task<Result<GetCategoryResult>> Handle(GetCategoryByIdQuery query, CancellationToken cancellationToken)
     {
-        GetCategoryResult? Category = await context.Categories
+        GetCategoryResult? category = await context.Categories
             .Where(Category => Category.CategoryId == query.CategoryId)
             .Select(Category => new GetCategoryResult(
                 Category.CategoryId,
@@ -29,10 +29,10 @@ internal sealed class GetCategoryByIdQueryHandler(IApplicationDbContext context)
                 Category.Description
             ))
             .SingleOrDefaultAsync(cancellationToken);
-        if (Category is null)
+        if (category is null)
         {
             return Result.Failure<GetCategoryResult>(CategoryErrors.NotFound(query.CategoryId));
         }
-        return Category;
+        return category;
     }
 }

@@ -23,7 +23,6 @@ public class Category
     public string Description { get; set; } = string.Empty;
     
     public static Category Create(
-        Guid categoryId,
         string categoryGroupName,
         string categoryName,
         string description
@@ -31,7 +30,6 @@ public class Category
         {
             return new Category
             {
-                CategoryId = categoryId,
                 IsUserDefined = true,
                 CategoryGroupName = categoryGroupName,
                 CategoryName = categoryName,
@@ -40,7 +38,6 @@ public class Category
         }
 
     public void Update(
-        Guid categoryId,
         string categoryGroupName,
         string categoryName,
         string description)
@@ -59,6 +56,6 @@ public static class CategoryErrors
         "Categories.NotFound",
         $"The category with the Id = '{categoryId}' was not found");
     public static Error NotUserDefined(Guid categoryId) => Error.Problem(
-            "Categories.NotUserDefined", 
+            "Categories.Problem", 
             $"Unable to edit since Category: {categoryId} is not user defined.");
 }

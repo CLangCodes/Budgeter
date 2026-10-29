@@ -25,7 +25,7 @@ internal sealed class GetTransactionByIdEndpoint : IEndpoint
             }
         })
         .WithTags(Tags.Transactions)
-        .Accepts<GetTransactionByIdQuery>("Transactions")
+        .Accepts<GetTransactionByIdQuery>("application/json")
         .Produces<GetTransactionResult>()
         .ProducesProblem(StatusCodes.Status404NotFound);
     }

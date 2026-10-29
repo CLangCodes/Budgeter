@@ -12,14 +12,14 @@ internal sealed class DeleteCategoryCommandHandler(IApplicationDbContext context
 {
     public async Task<Result> Handle(DeleteCategoryCommand command, CancellationToken cancellationToken)
     {
-        Category? Category = await context.Categories.SingleOrDefaultAsync(
+        Category? category = await context.Categories.SingleOrDefaultAsync(
             g => g.CategoryId == command.CategoryId, cancellationToken);
 
-        if (Category is null)
+        if (category is null)
             {return Result.Failure(CategoryErrors.NotFound(command.CategoryId));}
-        if (!Category.IsUserDefined)
+        if (!category.IsUserDefined)
             {return Result.Failure(CategoryErrors.NotUserDefined(command.CategoryId));}
-        context.Categories.Remove(Category);
+        context.Categories.Remove(category);
         
         await context.SaveChangesAsync(cancellationToken);
 

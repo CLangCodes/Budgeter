@@ -34,7 +34,7 @@ internal sealed class UpdateCategoryEndpoint : IEndpoint
                 cancellationToken).ConfigureAwait(false);
             return result.Match(Results.NoContent, CustomResults.Problem);
         })
-        .Accepts<UpdateCategoryCommand>("Categories")
+        .Accepts<UpdateCategoryCommand>("application/json")
         .WithTags(Tags.Categories)
         .Produces(StatusCodes.Status204NoContent)
         .ProducesProblem(StatusCodes.Status404NotFound);

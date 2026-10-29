@@ -23,7 +23,7 @@ internal sealed class GetCategoryByIdEndpoint : IEndpoint
             }
         })
         .WithTags(Tags.Categories)
-        .Accepts<GetCategoryByIdQuery>("Categories")
+        .Accepts<GetCategoryByIdQuery>("application/json")
         .Produces<GetCategoryResult>()
         .ProducesProblem(StatusCodes.Status404NotFound);
     }

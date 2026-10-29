@@ -21,7 +21,7 @@ internal sealed class GetTransactionsEndpoint : IEndpoint
                 return Results.Problem("There was a problem retrieving Transactions.");
             }
         })
-        .Accepts<GetTransactionsQuery>("Transactions")
+        .Accepts<GetTransactionsQuery>("application/json")
         .WithTags(Tags.Transactions)
         .Produces<GetTransactionsResult>();
     }
