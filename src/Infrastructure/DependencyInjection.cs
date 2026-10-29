@@ -21,9 +21,10 @@ public static class DependencyInjection
         this IServiceCollection services, 
         IConfiguration configuration)
     {
-        services.AddDbContext<BBDbContext>(options =>
-            options.UseSqlite("Data Source=budget-buddy.db;"));
-
+        var connectionString = configuration.GetConnectionString("BudgetBuddy");
+        // Registers IDbContextFactory<BBDbContext> (singleton) and BBDbContext (scoped)
+        services.AddDbContextFactory<BBDbContext>(options =>
+            options.UseSqlite(connectionString));
 
         services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<BBDbContext>());
         return services;

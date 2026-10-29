@@ -1,7 +1,5 @@
-using BudgetBuddy.Endpoints;
 using Application.Transactions;
 using Application.Abstractions.Messaging;
-using SharedKernel;
 
 namespace BudgetBuddy.Endpoints.Transactions;
 
@@ -22,6 +20,9 @@ internal sealed class GetTransactionsEndpoint : IEndpoint
             {
                 return Results.Problem("There was a problem retrieving Transactions.");
             }
-        });
+        })
+        .Accepts<GetTransactionsQuery>("application/json")
+        .WithTags(Tags.Transactions)
+        .Produces<GetTransactionsResult>();
     }
 }

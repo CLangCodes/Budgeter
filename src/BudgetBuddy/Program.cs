@@ -1,16 +1,15 @@
-using System.Reflection;
 using Application;
 using BudgetBuddy;
 using Infrastructure;
 using BudgetBuddy.Extensions;
+using Scalar.AspNetCore;
+using Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddInfrastructure(builder.Configuration)
     .AddApplication()
     .AddServer();
-
-builder.Services.AddEndpoints(Assembly.GetExecutingAssembly());
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -23,16 +22,15 @@ builder.Services.AddEndpoints(Assembly.GetExecutingAssembly());
 
 var app = builder.Build();
 app.MapEndpoints();
-// using (var db = app.Services
-//     .GetRequiredService<IDbContextFactory<BBDbContext>>()
-//     .CreateDbContext())
-// {
-//     db.Database.Migrate();
-// }
+app.ApplyMigrations();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference(options =>
+    {
+        options.WithTheme(ScalarTheme.Mars);
+    });
 }
 
 app.UseHttpsRedirection();

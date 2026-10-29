@@ -6,8 +6,8 @@ using SharedKernel;
 
 namespace Application.Transactions;
 
-public sealed record GetTransactionByIdQuery(int TransactionId) : IQuery<GetTransactionResponse>;
-public sealed record GetTransactionResponse(
+public sealed record GetTransactionByIdQuery(int TransactionId) : IQuery<GetTransactionResult>;
+public sealed record GetTransactionResult(
     int TransactionId, 
     int TransactionTypeId,
     string Description,
@@ -16,13 +16,13 @@ public sealed record GetTransactionResponse(
     string Category);
 
 internal sealed class GetTransactionByIdQueryHandler(IApplicationDbContext context)
-    : IQueryHandler<GetTransactionByIdQuery, GetTransactionResponse>
+    : IQueryHandler<GetTransactionByIdQuery, GetTransactionResult>
 {
-    public async Task<Result<GetTransactionResponse>> Handle(GetTransactionByIdQuery query, CancellationToken cancellationToken)
+    public async Task<Result<GetTransactionResult>> Handle(GetTransactionByIdQuery query, CancellationToken cancellationToken)
     {
-        GetTransactionResponse? transaction = await context.Transactions
+        GetTransactionResult? transaction = await context.Transactions
             .Where(transaction => transaction.Id == query.TransactionId)
-            .Select(transaction => new GetTransactionResponse(
+            .Select(transaction => new GetTransactionResult(
                 transaction.Id,
                 transaction.TransactionTypeId,
                 transaction.Description,
@@ -33,7 +33,7 @@ internal sealed class GetTransactionByIdQueryHandler(IApplicationDbContext conte
             .SingleOrDefaultAsync(cancellationToken);
         if (transaction is null)
         {
-            return Result.Failure<GetTransactionResponse>(TransactionErrors.NotFound(query.TransactionId));
+            return Result.Failure<GetTransactionResult>(TransactionErrors.NotFound(query.TransactionId));
         }
         return transaction;
     }
