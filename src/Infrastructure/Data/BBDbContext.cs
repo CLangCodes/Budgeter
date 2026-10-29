@@ -1,7 +1,7 @@
-using BudgetBuddy.Models;
+using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace BudgetBuddy.Data;
+namespace Infrastructure.Data;
 
 public class BBDbContext(DbContextOptions<BBDbContext> options) : DbContext(options)
 {
