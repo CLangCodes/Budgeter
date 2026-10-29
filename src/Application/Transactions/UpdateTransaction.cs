@@ -16,7 +16,7 @@ public sealed record UpdateTransactionCommand(
 ) : ICommand;
 
 
-internal sealed class UpdateGrantCommandHandler(IApplicationDbContext context
+internal sealed class UpdateTransactionCommandHandler(IApplicationDbContext context
     ) : ICommandHandler<UpdateTransactionCommand>
 {
     public async Task<Result> Handle(UpdateTransactionCommand command, CancellationToken cancellationToken)

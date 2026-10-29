@@ -21,10 +21,44 @@ public class Category
     /// Mapped from the PFCv2 Description designation
     /// </summary>
     public string Description { get; set; } = string.Empty;
+    
+    public static Category Create(
+        Guid categoryId,
+        string categoryGroupName,
+        string categoryName,
+        string description
+    )
+        {
+            return new Category
+            {
+                CategoryId = categoryId,
+                IsUserDefined = true,
+                CategoryGroupName = categoryGroupName,
+                CategoryName = categoryName,
+                Description = description
+            };
+        }
+
+    public void Update(
+        Guid categoryId,
+        string categoryGroupName,
+        string categoryName,
+        string description)
+    {
+        if(IsUserDefined)
+        {
+            CategoryGroupName = categoryGroupName;
+            CategoryName = categoryName;
+            Description = description;
+        }
+    }
 }
 public static class CategoryErrors
 {
     public static Error NotFound(Guid categoryId) => Error.NotFound(
         "Categories.NotFound",
         $"The category with the Id = '{categoryId}' was not found");
+    public static Error NotUserDefined(Guid categoryId) => Error.Problem(
+            "Categories.NotUserDefined", 
+            $"Unable to edit since Category: {categoryId} is not user defined.");
 }
