@@ -1,3 +1,4 @@
+using Application.Abstractions.Data;
 using Infrastructure.Data;
 using Infrastructure.Time;
 using Microsoft.EntityFrameworkCore;
@@ -20,9 +21,11 @@ public static class DependencyInjection
         this IServiceCollection services, 
         IConfiguration configuration)
     {
-        services.AddDbContextFactory<BBDbContext>(options =>
+        services.AddDbContext<BBDbContext>(options =>
             options.UseSqlite("Data Source=budget-buddy.db;"));
 
+
+        services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<BBDbContext>());
         return services;
     }
     

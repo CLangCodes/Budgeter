@@ -56,3 +56,9 @@ internal sealed class TransactionsNotFoundException : Exception
     public TransactionsNotFoundException(string message) : base(message) { }
     public TransactionsNotFoundException(string message, Exception innerException) : base(message, innerException) { }
 }
+public static class TransactionErrors
+{
+    public static Error NotFound(int transactionId) => Error.NotFound(
+        "TodoItems.NotFound",
+        $"The to-do item with the Id = '{transactionId}' was not found");
+}
