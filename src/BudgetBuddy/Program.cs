@@ -3,6 +3,7 @@ using BudgetBuddy;
 using Infrastructure;
 using BudgetBuddy.Extensions;
 using Scalar.AspNetCore;
+using Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services
@@ -21,12 +22,7 @@ builder.Services
 
 var app = builder.Build();
 app.MapEndpoints();
-// using (var db = app.Services
-//     .GetRequiredService<IDbContextFactory<BBDbContext>>()
-//     .CreateDbContext())
-// {
-//     db.Database.Migrate();
-// }
+app.ApplyMigrations();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
