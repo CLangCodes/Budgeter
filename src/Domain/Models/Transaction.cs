@@ -35,14 +35,12 @@ public class Transaction : Entity
         }
 
     public void Update(
-        int id,
         int transactionTypeId,
         string description,
         decimal amount,
         DateTime date,
         string category)
     {
-        Id = id;
         TransactionTypeId = transactionTypeId;
         Description = description;
         Amount = amount;
