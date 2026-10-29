@@ -8,7 +8,7 @@
             "name": "C#: BudgetBuddy Debug",
             "type": "dotnet",
             "request": "launch",
-            "projectPath": "${workspaceFolder}/src/BudgetBuddy.csproj"
+            "projectPath": "${workspaceFolder}/src/BudgetBuddy/BudgetBuddy.csproj"
         }
     ]
 }
