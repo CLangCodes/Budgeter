@@ -1,7 +1,9 @@
 using Infrastructure.Data;
+using Infrastructure.Time;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SharedKernel;
 
 namespace Infrastructure;
 
@@ -11,6 +13,7 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration) =>
         services
+            .AddServices()
             .AddDatabase(configuration);
 
     private static IServiceCollection AddDatabase(
@@ -19,6 +22,13 @@ public static class DependencyInjection
     {
         services.AddDbContextFactory<BBDbContext>(options =>
             options.UseSqlite("Data Source=budget-buddy.db;"));
+
+        return services;
+    }
+    
+    private static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
         return services;
     }

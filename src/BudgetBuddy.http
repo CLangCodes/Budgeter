@@ -1,6 +1,0 @@
-@BudgetBuddy_HostAddress = http://localhost:5033
-
-GET {{BudgetBuddy_HostAddress}}/transactions/
-Accept: application/json
-
-###

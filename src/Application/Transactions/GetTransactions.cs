@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Transactions;
 
-internal sealed record GetTransactionsQuery() : IQuery<GetTransactionsResult>;
-internal sealed record TransactionDetail(int Id, int TransactionTypeId, string Description, decimal Amount, DateTime Date, string Category);
-internal sealed record GetTransactionsResult(List<TransactionDetail> TransactionDetails, DateTime QueryTime);
+public sealed record GetTransactionsQuery() : IQuery<GetTransactionsResult>;
+public sealed record TransactionDetail(int Id, int TransactionTypeId, string Description, decimal Amount, DateTime Date, string Category);
+public sealed record GetTransactionsResult(List<TransactionDetail> TransactionDetails, DateTime QueryTime);
 
 internal class GetTransactionQueryHandler : IQueryHandler<GetTransactionsQuery, GetTransactionsResult>
 {
@@ -38,24 +38,3 @@ internal class GetTransactionQueryHandler : IQueryHandler<GetTransactionsQuery, 
         }
     }
 }
-
-// internal sealed class GetTransactionsEndpoint : IEndpoint
-// {
-//     public static void MapEndpoint(IEndpointRouteBuilder app)
-//     {
-//         app.MapGet("/v1/transactions/", async (HttpContext httpContext,
-//         IQueryHandler<GetTransactionsQuery, GetTransactionsResult> handler,
-//         CancellationToken cancellationToken) =>
-//         {
-//             try
-//             {
-//                 var result = await handler.Handle(
-//                     new GetTransactionsQuery(), cancellationToken).ConfigureAwait(false);
-//                 return Results.Ok(result.Value);                
-//             } catch
-//             {
-//                 return Results.Problem("There was a problem retrieving Transactions.");
-//             }
-//         });
-//     }
-// }
