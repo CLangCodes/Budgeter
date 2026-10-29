@@ -7,7 +7,7 @@ namespace Domain.Models;
 /// </summary>
 public class Transaction : Entity
 {
-    public int Id { get; set; }
+    public int Id { get; private set; }
     public int TransactionTypeId { get; set; } // 0 for Income, 1 for Expense
     public string Description { get; set; } = string.Empty;
     public decimal Amount { get; set; }
@@ -15,7 +15,6 @@ public class Transaction : Entity
     public string Category { get; set; } = string.Empty;
     
     public static Transaction Create(
-        int id,
         int transactionTypeId,
         string description,
         decimal amount,
@@ -25,7 +24,6 @@ public class Transaction : Entity
         {
             return new Transaction
             {
-                Id = id,
                 TransactionTypeId = transactionTypeId,
                 Description = description,
                 Amount = amount,
@@ -57,6 +55,6 @@ internal sealed class TransactionsNotFoundException : Exception
 public static class TransactionErrors
 {
     public static Error NotFound(int transactionId) => Error.NotFound(
-        "TodoItems.NotFound",
-        $"The to-do item with the Id = '{transactionId}' was not found");
+        "Transactions.NotFound",
+        $"The transaction with the Id = '{transactionId}' was not found");
 }
