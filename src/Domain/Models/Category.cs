@@ -1,3 +1,5 @@
+using SharedKernel;
+
 namespace Domain.Models;
 
 /// <summary>
@@ -19,4 +21,10 @@ public class Category
     /// Mapped from the PFCv2 Description designation
     /// </summary>
     public string Description { get; set; } = string.Empty;
+}
+public static class CategoryErrors
+{
+    public static Error NotFound(Guid categoryId) => Error.NotFound(
+        "Categories.NotFound",
+        $"The category with the Id = '{categoryId}' was not found");
 }
