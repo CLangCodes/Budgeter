@@ -4,30 +4,30 @@ using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
-namespace Application.Expenses;
+namespace Application.Budgets;
 
-public sealed record GetExpenseByIdQuery(Guid ExpenseId) : IQuery<GetExpenseResult>;
-public sealed record GetExpenseResult(
-    Guid ExpenseId,
+public sealed record GetBudgetItemByIdQuery(Guid BudgetItemId) : IQuery<GetBudgetItemResult>;
+public sealed record GetBudgetItemResult(
+    Guid BudgetItemId,
     Guid CategoryId,
-    string ExpenseName,
+    string BudgetItemName,
     string Description,
     RecurrenceUnit RecurrenceUnit,
     int RecurrenceInterval,
     DateOnly StartTrackingDate,
     DateOnly? EndDate);
 
-internal sealed class GetExpenseByIdQueryHandler(IApplicationDbContext context)
-    : IQueryHandler<GetExpenseByIdQuery, GetExpenseResult>
+internal sealed class GetBudgetItemByIdQueryHandler(IApplicationDbContext context)
+    : IQueryHandler<GetBudgetItemByIdQuery, GetBudgetItemResult>
 {
-    public async Task<Result<GetExpenseResult>> Handle(GetExpenseByIdQuery query, CancellationToken cancellationToken)
+    public async Task<Result<GetBudgetItemResult>> Handle(GetBudgetItemByIdQuery query, CancellationToken cancellationToken)
     {
-        GetExpenseResult? expense = await context.Expenses
-            .Where(e => e.ExpenseId == query.ExpenseId)
-            .Select(e => new GetExpenseResult(
-                e.ExpenseId,
+        GetBudgetItemResult? budgetItem = await context.BudgetItems
+            .Where(e => e.BudgetItemId == query.BudgetItemId)
+            .Select(e => new GetBudgetItemResult(
+                e.BudgetItemId,
                 e.CategoryId,
-                e.ExpenseName,
+                e.BudgetItemName,
                 e.Description,
                 e.RecurrenceUnit,
                 e.RecurrenceInterval,
@@ -35,10 +35,10 @@ internal sealed class GetExpenseByIdQueryHandler(IApplicationDbContext context)
                 e.EndDate
             ))
             .SingleOrDefaultAsync(cancellationToken);
-        if (expense is null)
+        if (budgetItem is null)
         {
-            return Result.Failure<GetExpenseResult>(ExpenseErrors.NotFound(query.ExpenseId));
+            return Result.Failure<GetBudgetItemResult>(BudgetItemErrors.NotFound(query.BudgetItemId));
         }
-        return expense;
+        return budgetItem;
     }
 }

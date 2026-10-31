@@ -4,24 +4,24 @@ using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
-namespace Application.Expenses;
+namespace Application.Budgets;
 
-public sealed record CreateExpenseCommand(
+public sealed record CreateBudgetItemCommand(
     Guid CategoryId,
-    string ExpenseName,
+    string BudgetItemName,
     string Description,
     RecurrenceUnit RecurrenceUnit,
     int RecurrenceInterval,
     DateOnly StartTrackingDate,
     DateOnly? EndDate) : ICommand<Guid>;
 
-internal sealed class CreateExpenseCommandHandler(
+internal sealed class CreateBudgetItemCommandHandler(
     IApplicationDbContext context
-) : ICommandHandler<CreateExpenseCommand, Guid>
+) : ICommandHandler<CreateBudgetItemCommand, Guid>
 {
-    public async Task<Result<Guid>> Handle(CreateExpenseCommand command, CancellationToken cancellationToken)
+    public async Task<Result<Guid>> Handle(CreateBudgetItemCommand command, CancellationToken cancellationToken)
     {
-        Result recurrence = Expense.ValidateRecurrence(
+        Result recurrence = BudgetItem.ValidateRecurrence(
             command.RecurrenceInterval,
             command.StartTrackingDate,
             command.EndDate);
@@ -33,9 +33,9 @@ internal sealed class CreateExpenseCommandHandler(
         if (!categoryExists)
             {return Result.Failure<Guid>(CategoryErrors.NotFound(command.CategoryId));}
 
-        Expense expense = Expense.Create(
+        BudgetItem budgetItem = BudgetItem.Create(
             command.CategoryId,
-            command.ExpenseName,
+            command.BudgetItemName,
             command.Description ?? string.Empty,
             command.RecurrenceUnit,
             command.RecurrenceInterval,
@@ -43,8 +43,8 @@ internal sealed class CreateExpenseCommandHandler(
             command.EndDate
         );
 
-        context.Expenses.Add(expense);
+        context.BudgetItems.Add(budgetItem);
         await context.SaveChangesAsync(cancellationToken);
-        return expense.ExpenseId;
+        return budgetItem.BudgetItemId;
     }
 }

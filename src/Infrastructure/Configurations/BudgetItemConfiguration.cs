@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Data.Configuration;
 
-internal sealed class ExpenseConfiguration : IEntityTypeConfiguration<Expense>
+internal sealed class BudgetItemConfiguration : IEntityTypeConfiguration<BudgetItem>
 {
-    public void Configure(EntityTypeBuilder<Expense> builder)
+    public void Configure(EntityTypeBuilder<BudgetItem> builder)
     {
-        builder.HasKey(e => e.ExpenseId);
+        builder.HasKey(e => e.BudgetItemId);
 
         builder.Property(e => e.RecurrenceUnit)
             .HasConversion<string>();

@@ -1,26 +1,26 @@
 using Application.Abstractions.Messaging;
-using Application.Expenses;
+using Application.Budgets;
 using BudgetBuddy.Extensions;
 using BudgetBuddy.Infrastructure;
 using SharedKernel;
 
-namespace BudgetBuddy.Endpoints.Expenses;
+namespace BudgetBuddy.Endpoints.Budgets;
 
-internal sealed class DeleteExpenseEndpoint : IEndpoint
+internal sealed class DeleteBudgetItemEndpoint : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapDelete("/v1/expenses/{expenseId:Guid}", async (
-        Guid expenseId,
-        ICommandHandler<DeleteExpenseCommand> handler,
+        app.MapDelete("/v1/budgets/{budgetItemId:Guid}", async (
+        Guid budgetItemId,
+        ICommandHandler<DeleteBudgetItemCommand> handler,
         CancellationToken cancellationToken) =>
         {
             Result result = await handler.Handle(
-                new DeleteExpenseCommand(expenseId),
+                new DeleteBudgetItemCommand(budgetItemId),
                 cancellationToken).ConfigureAwait(false);
             return result.Match(Results.NoContent, CustomResults.Problem);
         })
-        .WithTags(Tags.Expenses)
+        .WithTags(Tags.Budgets)
         .Produces(StatusCodes.Status204NoContent)
         .ProducesProblem(StatusCodes.Status404NotFound);
     }

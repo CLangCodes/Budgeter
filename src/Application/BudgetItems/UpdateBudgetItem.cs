@@ -4,12 +4,12 @@ using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
-namespace Application.Expenses;
+namespace Application.Budgets;
 
-public sealed record UpdateExpenseCommand(
-    Guid ExpenseId,
+public sealed record UpdateBudgetItemCommand(
+    Guid BudgetItemId,
     Guid CategoryId,
-    string ExpenseName,
+    string BudgetItemName,
     string Description,
     RecurrenceUnit RecurrenceUnit,
     int RecurrenceInterval,
@@ -17,18 +17,18 @@ public sealed record UpdateExpenseCommand(
     DateOnly? EndDate
 ) : ICommand;
 
-internal sealed class UpdateExpenseCommandHandler(IApplicationDbContext context
-    ) : ICommandHandler<UpdateExpenseCommand>
+internal sealed class UpdateBudgetItemCommandHandler(IApplicationDbContext context
+    ) : ICommandHandler<UpdateBudgetItemCommand>
 {
-    public async Task<Result> Handle(UpdateExpenseCommand command, CancellationToken cancellationToken)
+    public async Task<Result> Handle(UpdateBudgetItemCommand command, CancellationToken cancellationToken)
     {
-        var expense = await context.Expenses
-            .SingleOrDefaultAsync(e => e.ExpenseId == command.ExpenseId, cancellationToken);
+        var budgetItem = await context.BudgetItems
+            .SingleOrDefaultAsync(e => e.BudgetItemId == command.BudgetItemId, cancellationToken);
 
-        if (expense is null)
-            {return Result.Failure(ExpenseErrors.NotFound(command.ExpenseId));}
+        if (budgetItem is null)
+            {return Result.Failure(BudgetItemErrors.NotFound(command.BudgetItemId));}
 
-        Result recurrence = Expense.ValidateRecurrence(
+        Result recurrence = BudgetItem.ValidateRecurrence(
             command.RecurrenceInterval,
             command.StartTrackingDate,
             command.EndDate);
@@ -40,9 +40,9 @@ internal sealed class UpdateExpenseCommandHandler(IApplicationDbContext context
         if (!categoryExists)
             {return Result.Failure(CategoryErrors.NotFound(command.CategoryId));}
 
-        expense.Update(
+        budgetItem.Update(
             command.CategoryId,
-            command.ExpenseName,
+            command.BudgetItemName,
             command.Description ?? string.Empty,
             command.RecurrenceUnit,
             command.RecurrenceInterval,

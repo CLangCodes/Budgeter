@@ -4,32 +4,32 @@ using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
-namespace Application.Expenses;
+namespace Application.Budgets;
 
-public sealed record GetExpensesQuery() : IQuery<GetExpensesResult>;
-public sealed record ExpenseDetail(
-    Guid ExpenseId,
+public sealed record GetBudgetItemsQuery() : IQuery<GetBudgetItemsResult>;
+public sealed record BudgetItemDetail(
+    Guid BudgetItemId,
     Guid CategoryId,
-    string ExpenseName,
+    string BudgetItemName,
     string Description,
     RecurrenceUnit RecurrenceUnit,
     int RecurrenceInterval,
     DateOnly StartTrackingDate,
     DateOnly? EndDate
 );
-public sealed record GetExpensesResult(List<ExpenseDetail> Expenses);
+public sealed record GetBudgetItemsResult(List<BudgetItemDetail> BudgetItems);
 
 
-internal sealed class GetExpensesQueryHandler(IApplicationDbContext context) : IQueryHandler<GetExpensesQuery, GetExpensesResult>
+internal sealed class GetBudgetItemsQueryHandler(IApplicationDbContext context) : IQueryHandler<GetBudgetItemsQuery, GetBudgetItemsResult>
 {
-    public async Task<Result<GetExpensesResult>> Handle(GetExpensesQuery query, CancellationToken cancellationToken)
+    public async Task<Result<GetBudgetItemsResult>> Handle(GetBudgetItemsQuery query, CancellationToken cancellationToken)
     {
-        var expenses = await context.Expenses
+        var budgetItems = await context.BudgetItems
             .AsNoTracking()
-            .Select(e => new ExpenseDetail(
-                e.ExpenseId,
+            .Select(e => new BudgetItemDetail(
+                e.BudgetItemId,
                 e.CategoryId,
-                e.ExpenseName,
+                e.BudgetItemName,
                 e.Description,
                 e.RecurrenceUnit,
                 e.RecurrenceInterval,
@@ -37,6 +37,6 @@ internal sealed class GetExpensesQueryHandler(IApplicationDbContext context) : I
                 e.EndDate))
             .ToListAsync(cancellationToken);
 
-        return new GetExpensesResult(expenses);
+        return new GetBudgetItemsResult(budgetItems);
     }
 }

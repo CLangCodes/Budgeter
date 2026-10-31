@@ -1,18 +1,18 @@
 using Application.Abstractions.Messaging;
-using Application.Expenses;
+using Application.Budgets;
 using BudgetBuddy.Extensions;
 using BudgetBuddy.Infrastructure;
 using SharedKernel;
 
-namespace BudgetBuddy.Endpoints.Expenses;
+namespace BudgetBuddy.Endpoints.Budgets;
 
-internal sealed class CreateExpenseEndpoint : IEndpoint
+internal sealed class CreateBudgetItemEndpoint : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPost("/v1/expenses", async (
-        CreateExpenseCommand command,
-        ICommandHandler<CreateExpenseCommand, Guid> handler,
+        app.MapPost("/v1/budgets", async (
+        CreateBudgetItemCommand command,
+        ICommandHandler<CreateBudgetItemCommand, Guid> handler,
         CancellationToken cancellationToken) =>
         {
             Result<Guid> result = await handler.Handle(
@@ -20,8 +20,8 @@ internal sealed class CreateExpenseEndpoint : IEndpoint
                 cancellationToken).ConfigureAwait(false);
             return result.Match(Results.Ok, CustomResults.Problem);
         })
-        .Accepts<CreateExpenseCommand>("application/json")
-        .WithTags(Tags.Expenses)
+        .Accepts<CreateBudgetItemCommand>("application/json")
+        .WithTags(Tags.Budgets)
         .Produces<Guid>()
         .ProducesProblem(StatusCodes.Status400BadRequest);
     }

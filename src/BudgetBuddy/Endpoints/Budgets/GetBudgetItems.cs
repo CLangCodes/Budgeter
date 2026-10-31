@@ -1,24 +1,24 @@
 using Application.Abstractions.Messaging;
-using Application.Expenses;
+using Application.Budgets;
 using BudgetBuddy.Extensions;
 using BudgetBuddy.Infrastructure;
 using SharedKernel;
 
-namespace BudgetBuddy.Endpoints.Expenses;
+namespace BudgetBuddy.Endpoints.Budgets;
 
-internal sealed class GetExpensesEndpoint : IEndpoint
+internal sealed class GetBudgetItemsEndpoint : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapGet("/v1/expenses", async (
-        IQueryHandler<GetExpensesQuery, GetExpensesResult> handler,
+        app.MapGet("/v1/budgets", async (
+        IQueryHandler<GetBudgetItemsQuery, GetBudgetItemsResult> handler,
         CancellationToken cancellationToken) =>
         {
-            Result<GetExpensesResult> result = await handler.Handle(
-                new GetExpensesQuery(), cancellationToken).ConfigureAwait(false);
+            Result<GetBudgetItemsResult> result = await handler.Handle(
+                new GetBudgetItemsQuery(), cancellationToken).ConfigureAwait(false);
             return result.Match(Results.Ok, CustomResults.Problem);
         })
-        .WithTags(Tags.Expenses)
-        .Produces<GetExpensesResult>();
+        .WithTags(Tags.Budgets)
+        .Produces<GetBudgetItemsResult>();
     }
 }

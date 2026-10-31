@@ -4,11 +4,11 @@ namespace Domain.Models;
 
 public enum RecurrenceUnit { Day, Week, Month, Year }
 
-public class Expense : Entity
+public class BudgetItem : Entity
 {
-    public Guid ExpenseId { get; set; }
+    public Guid BudgetItemId { get; set; }
     public Guid CategoryId { get; set; }
-    public string ExpenseName { get; set; } = string.Empty;
+    public string BudgetItemName { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
 
     public RecurrenceUnit RecurrenceUnit { get; set; }   // Month
@@ -16,9 +16,9 @@ public class Expense : Entity
     public DateOnly StartTrackingDate { get; set; }      // anchor: first due date, e.g. 2026-11-15
     public DateOnly? EndDate { get; set; }               // optional: loan payoff, cancelled subscription
 
-    public static Expense Create(
+    public static BudgetItem Create(
         Guid categoryId,
-        string expenseName,
+        string budgetItemName,
         string description,
         RecurrenceUnit recurrenceUnit,
         int recurrenceInterval,
@@ -26,11 +26,11 @@ public class Expense : Entity
         DateOnly? endDate
     )
         {
-            return new Expense
+            return new BudgetItem
             {
-                ExpenseId = Guid.NewGuid(),
+                BudgetItemId = Guid.NewGuid(),
                 CategoryId = categoryId,
-                ExpenseName = expenseName,
+                BudgetItemName = budgetItemName,
                 Description = description,
                 RecurrenceUnit = recurrenceUnit,
                 RecurrenceInterval = recurrenceInterval,
@@ -41,7 +41,7 @@ public class Expense : Entity
 
     public void Update(
         Guid categoryId,
-        string expenseName,
+        string budgetItemName,
         string description,
         RecurrenceUnit recurrenceUnit,
         int recurrenceInterval,
@@ -49,7 +49,7 @@ public class Expense : Entity
         DateOnly? endDate)
     {
         CategoryId = categoryId;
-        ExpenseName = expenseName;
+        BudgetItemName = budgetItemName;
         Description = description;
         RecurrenceUnit = recurrenceUnit;
         RecurrenceInterval = recurrenceInterval;
@@ -60,9 +60,9 @@ public class Expense : Entity
     public static Result ValidateRecurrence(int recurrenceInterval, DateOnly startTrackingDate, DateOnly? endDate)
     {
         if (recurrenceInterval < 1)
-            {return Result.Failure(ExpenseErrors.InvalidRecurrence("RecurrenceInterval must be at least 1."));}
+            {return Result.Failure(BudgetItemErrors.InvalidRecurrence("RecurrenceInterval must be at least 1."));}
         if (endDate is { } end && end < startTrackingDate)
-            {return Result.Failure(ExpenseErrors.InvalidRecurrence("EndDate cannot be before StartTrackingDate."));}
+            {return Result.Failure(BudgetItemErrors.InvalidRecurrence("EndDate cannot be before StartTrackingDate."));}
         return Result.Success();
     }
 
@@ -83,12 +83,12 @@ public class Expense : Entity
         }
     }
 }
-public static class ExpenseErrors
+public static class BudgetItemErrors
 {
-    public static Error NotFound(Guid expenseId) => Error.NotFound(
-        "Expenses.NotFound",
-        $"The expense with the Id = '{expenseId}' was not found");
+    public static Error NotFound(Guid budgetItemId) => Error.NotFound(
+        "BudgetItems.NotFound",
+        $"The budget item with the Id = '{budgetItemId}' was not found");
     public static Error InvalidRecurrence(string reason) => Error.Problem(
-        "Expenses.InvalidRecurrence",
+        "BudgetItems.InvalidRecurrence",
         reason);
 }

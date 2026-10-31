@@ -17,6 +17,43 @@ namespace Infrastructure.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.14");
 
+            modelBuilder.Entity("Domain.Models.BudgetItem", b =>
+                {
+                    b.Property<Guid>("BudgetItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("BudgetItemName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateOnly?>("EndDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("RecurrenceInterval")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("RecurrenceUnit")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateOnly>("StartTrackingDate")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("BudgetItemId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("BudgetItems");
+                });
+
             modelBuilder.Entity("Domain.Models.Category", b =>
                 {
                     b.Property<Guid>("CategoryId")
@@ -1061,43 +1098,6 @@ namespace Infrastructure.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Domain.Models.Expense", b =>
-                {
-                    b.Property<Guid>("ExpenseId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateOnly?>("EndDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ExpenseName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("RecurrenceInterval")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("RecurrenceUnit")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateOnly>("StartTrackingDate")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("ExpenseId");
-
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("Expenses");
-                });
-
             modelBuilder.Entity("Domain.Models.Transaction", b =>
                 {
                     b.Property<int>("Id")
@@ -1126,7 +1126,7 @@ namespace Infrastructure.Data.Migrations
                     b.ToTable("Transactions");
                 });
 
-            modelBuilder.Entity("Domain.Models.Expense", b =>
+            modelBuilder.Entity("Domain.Models.BudgetItem", b =>
                 {
                     b.HasOne("Domain.Models.Category", null)
                         .WithMany()

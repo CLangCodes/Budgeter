@@ -1,18 +1,18 @@
 using Application.Abstractions.Messaging;
-using Application.Expenses;
+using Application.Budgets;
 using BudgetBuddy.Extensions;
 using BudgetBuddy.Infrastructure;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using SharedKernel;
 
-namespace BudgetBuddy.Endpoints.Expenses;
+namespace BudgetBuddy.Endpoints.Budgets;
 
-internal sealed class UpdateExpenseEndpoint : IEndpoint
+internal sealed class UpdateBudgetItemEndpoint : IEndpoint
 {
-    internal sealed record UpdateExpenseRequest(
+    internal sealed record UpdateBudgetItemRequest(
         Guid CategoryId,
-        string ExpenseName,
+        string BudgetItemName,
         string Description,
         RecurrenceUnit RecurrenceUnit,
         int RecurrenceInterval,
@@ -21,18 +21,18 @@ internal sealed class UpdateExpenseEndpoint : IEndpoint
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPut("/v1/expenses/{expenseId:Guid}", async (
-        Guid expenseId,
+        app.MapPut("/v1/budgets/{budgetItemId:Guid}", async (
+        Guid budgetItemId,
         [FromBody]
-        UpdateExpenseRequest request,
-        ICommandHandler<UpdateExpenseCommand> handler,
+        UpdateBudgetItemRequest request,
+        ICommandHandler<UpdateBudgetItemCommand> handler,
         CancellationToken cancellationToken) =>
         {
             Result result = await handler.Handle(
-                new UpdateExpenseCommand(
-                    expenseId,
+                new UpdateBudgetItemCommand(
+                    budgetItemId,
                     request.CategoryId,
-                    request.ExpenseName,
+                    request.BudgetItemName,
                     request.Description,
                     request.RecurrenceUnit,
                     request.RecurrenceInterval,
@@ -42,7 +42,7 @@ internal sealed class UpdateExpenseEndpoint : IEndpoint
                 cancellationToken).ConfigureAwait(false);
             return result.Match(Results.NoContent, CustomResults.Problem);
         })
-        .WithTags(Tags.Expenses)
+        .WithTags(Tags.Budgets)
         .Produces(StatusCodes.Status204NoContent)
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .ProducesProblem(StatusCodes.Status404NotFound);

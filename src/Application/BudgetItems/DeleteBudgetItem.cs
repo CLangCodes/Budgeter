@@ -4,20 +4,20 @@ using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
-namespace Application.Expenses;
+namespace Application.Budgets;
 
-public sealed record DeleteExpenseCommand(Guid ExpenseId) : ICommand;
-internal sealed class DeleteExpenseCommandHandler(IApplicationDbContext context)
-    : ICommandHandler<DeleteExpenseCommand>
+public sealed record DeleteBudgetItemCommand(Guid BudgetItemId) : ICommand;
+internal sealed class DeleteBudgetItemCommandHandler(IApplicationDbContext context)
+    : ICommandHandler<DeleteBudgetItemCommand>
 {
-    public async Task<Result> Handle(DeleteExpenseCommand command, CancellationToken cancellationToken)
+    public async Task<Result> Handle(DeleteBudgetItemCommand command, CancellationToken cancellationToken)
     {
-        Expense? expense = await context.Expenses.SingleOrDefaultAsync(
-            e => e.ExpenseId == command.ExpenseId, cancellationToken);
+        BudgetItem? budgetItem = await context.BudgetItems.SingleOrDefaultAsync(
+            e => e.BudgetItemId == command.BudgetItemId, cancellationToken);
 
-        if (expense is null)
-            {return Result.Failure(ExpenseErrors.NotFound(command.ExpenseId));}
-        context.Expenses.Remove(expense);
+        if (budgetItem is null)
+            {return Result.Failure(BudgetItemErrors.NotFound(command.BudgetItemId));}
+        context.BudgetItems.Remove(budgetItem);
 
         await context.SaveChangesAsync(cancellationToken);
 
