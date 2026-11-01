@@ -1,6 +1,7 @@
 using Application.Abstractions.Data;
 using Infrastructure.Data;
 using Infrastructure.Time;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,11 +23,18 @@ public static class DependencyInjection
         IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("BudgetBuddy");
-        // Registers IDbContextFactory<BBDbContext> (singleton) and BBDbContext (scoped)
-        services.AddDbContextFactory<BBDbContext>(options =>
-            options.UseSqlite(connectionString));
+        var stringBuilder = new SqliteConnectionStringBuilder(connectionString);
+        stringBuilder.DataSource = Path.Combine(
+            AppContext.BaseDirectory, 
+            stringBuilder.DataSource);
 
-        services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<BBDbContext>());
+        // Registers IDbContextFactory<BBDbContext> (singleton) and 
+        // BBDbContext (scoped)
+        services.AddDbContextFactory<BBDbContext>(options =>
+            options.UseSqlite(stringBuilder.ToString()));
+
+        services.AddScoped<IApplicationDbContext>(sp => 
+            sp.GetRequiredService<BBDbContext>());
         return services;
     }
     

@@ -1,0 +1,24 @@
+services:
+  # The app runs as the non-root "app" user (UID 1654); a fresh named volume is
+  # owned by root, so hand it over before the app starts.
+  init-volume:
+    image: busybox:1.36
+    command: chown -R 1654:1654 /data
+    volumes:
+      - budget-buddy-data:/data
+
+  budget-buddy:
+    image: clangcodes/budget-buddy:${BUDGET_BUDDY_TAG:-latest}
+    restart: unless-stopped
+    ports:
+      - "${BUDGET_BUDDY_PORT:-8080}:8080"
+    environment:
+      ConnectionStrings__BudgetBuddy: "Data Source=/data/budget-buddy.db"
+    volumes:
+      - budget-buddy-data:/data
+    depends_on:
+      init-volume:
+        condition: service_completed_successfully
+
+volumes:
+  budget-buddy-data:
