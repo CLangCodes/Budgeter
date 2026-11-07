@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace BudgetBuddy.Extensions;
 
 internal static class ServiceCollectionExtensions
@@ -6,6 +8,18 @@ internal static class ServiceCollectionExtensions
     {
         services.AddOpenApi(options =>
         {
+            options.AddDocumentTransformer((document, context, cancellationToken) =>
+            {
+                // InformationalVersion comes from <Version>; .NET appends "+<commit sha>", so strip that
+                string? version = typeof(ServiceCollectionExtensions).Assembly
+                    .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+                    .InformationalVersion
+                    .Split('+')[0];
+
+                document.Info.Version = version ?? "0.0.0";
+                return Task.CompletedTask;
+            });
+
             // Scalar renders operations in document order; keep DELETE last within each path
             options.AddDocumentTransformer((document, context, cancellationToken) =>
             {
