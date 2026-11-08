@@ -44,9 +44,9 @@ public class Account : Entity
         UpdatedAt = utcNow;
     }
 
-    public void UpdateBalance(decimal updatedBalance, DateTime utcNow)
+    public void UpdateStartingBalance(decimal updatedStartingBalance, DateTime utcNow)
     {
-        StartingBalance = updatedBalance;
+        StartingBalance = updatedStartingBalance;
         UpdatedAt = utcNow;
     }
 }

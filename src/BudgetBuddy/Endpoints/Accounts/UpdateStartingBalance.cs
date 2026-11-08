@@ -8,24 +8,24 @@ using SharedKernel;
 
 namespace BudgetBuddy.Endpoints.Accounts;
 
-internal sealed class UpdateAccountBalanceEndpoint : IEndpoint
+internal sealed class UpdateStartingBalanceEndpoint : IEndpoint
 {
-    internal sealed record UpdateAccountBalanceRequest(
-        decimal UpdatedAccountBalance);
+    internal sealed record UpdateStartingBalanceRequest(
+        decimal UpdatedStartingBalance);
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
         app.MapPut("/v1/accounts/{accountId:Guid}/balance", async (
         Guid accountId,
         [FromBody]
-        UpdateAccountBalanceRequest request,
-        ICommandHandler<UpdateAccountBalanceCommand> handler,
+        UpdateStartingBalanceRequest request,
+        ICommandHandler<UpdateStartingBalanceCommand> handler,
         CancellationToken cancellationToken) =>
         {
             Result result = await handler.Handle(
-                new UpdateAccountBalanceCommand(
+                new UpdateStartingBalanceCommand(
                     accountId,
-                    request.UpdatedAccountBalance
+                    request.UpdatedStartingBalance
                     ),
                 cancellationToken).ConfigureAwait(false);
             return result.Match(Results.NoContent, CustomResults.Problem);
