@@ -7,12 +7,13 @@ public enum AccountType { Cash, Checking, Savings }
 public class Account : Entity
 {
     public Guid AccountId { get; set; }
-    public IReadOnlyList<Transaction> Transactions { get; set; } = [];
+    public List<Transaction> Transactions { get; set; } = [];
     public string NickName { get; set; } = string.Empty;
     public AccountType AccountType { get; set; }
     public decimal StartingBalance { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
+    public decimal Balance => StartingBalance - Transactions.Sum(t => t.Amount);
 
     public static Account Create(
         string nickName,
