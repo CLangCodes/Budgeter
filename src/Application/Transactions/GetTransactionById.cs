@@ -9,6 +9,7 @@ namespace Application.Transactions;
 public sealed record GetTransactionByIdQuery(int TransactionId) : IQuery<GetTransactionResult>;
 public sealed record GetTransactionResult(
     int TransactionId, 
+    Guid AccountId,
     int TransactionTypeId,
     string Description,
     decimal Amount,
@@ -24,6 +25,7 @@ internal sealed class GetTransactionByIdQueryHandler(IApplicationDbContext conte
             .Where(transaction => transaction.Id == query.TransactionId)
             .Select(transaction => new GetTransactionResult(
                 transaction.Id,
+                transaction.AccountId ?? Guid.Empty,
                 transaction.TransactionTypeId,
                 transaction.Description,
                 transaction.Amount,

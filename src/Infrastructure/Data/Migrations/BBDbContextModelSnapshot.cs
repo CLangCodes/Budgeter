@@ -1132,6 +1132,9 @@ namespace Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<Guid?>("AccountId")
+                        .HasColumnType("TEXT");
+
                     b.Property<decimal>("Amount")
                         .HasColumnType("TEXT");
 
@@ -1151,6 +1154,8 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AccountId");
+
                     b.ToTable("Transactions");
                 });
 
@@ -1161,6 +1166,19 @@ namespace Infrastructure.Data.Migrations
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Models.Transaction", b =>
+                {
+                    b.HasOne("Domain.Models.Account", null)
+                        .WithMany("Transactions")
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Domain.Models.Account", b =>
+                {
+                    b.Navigation("Transactions");
                 });
 #pragma warning restore 612, 618
         }

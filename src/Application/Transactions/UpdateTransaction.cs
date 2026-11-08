@@ -8,6 +8,7 @@ namespace Application.Transactions;
 
 public sealed record UpdateTransactionCommand(
     int TransactionId,
+    Guid AccountId,
     int TransactionTypeId, 
     string Description, 
     decimal Amount, 
@@ -29,6 +30,7 @@ internal sealed class UpdateTransactionCommandHandler(IApplicationDbContext cont
             {return Result.Failure(TransactionErrors.NotFound(command.TransactionId));}
         transaction.Update(
             command.TransactionTypeId,
+            command.AccountId,
             command.Description,
             command.Amount,
             command.Date,

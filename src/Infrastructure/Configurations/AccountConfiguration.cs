@@ -16,5 +16,10 @@ internal sealed class AccountConfiguration : IEntityTypeConfiguration<Account>
         // SQLite stores decimal as TEXT; store as REAL so it can be sorted/aggregated.
         builder.Property(a => a.StartingBalance)
             .HasConversion<double>();
+
+        builder.HasMany(ac => ac.Transactions)
+            .WithOne()
+            .HasForeignKey(t => t.AccountId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

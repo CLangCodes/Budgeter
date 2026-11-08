@@ -8,6 +8,7 @@ namespace Domain.Models;
 public class Transaction : Entity
 {
     public int Id { get; private set; }
+    public Guid? AccountId { get; set; }
     public int TransactionTypeId { get; set; } // 0 for Income, 1 for Expense
     public string Description { get; set; } = string.Empty;
     public decimal Amount { get; set; }
@@ -16,6 +17,7 @@ public class Transaction : Entity
     
     public static Transaction Create(
         int transactionTypeId,
+        Guid accountId,
         string description,
         decimal amount,
         DateTime date,
@@ -25,6 +27,7 @@ public class Transaction : Entity
             return new Transaction
             {
                 TransactionTypeId = transactionTypeId,
+                AccountId = accountId,
                 Description = description,
                 Amount = amount,
                 Date = date,
@@ -34,12 +37,14 @@ public class Transaction : Entity
 
     public void Update(
         int transactionTypeId,
+        Guid accountId,
         string description,
         decimal amount,
         DateTime date,
         string category)
     {
         TransactionTypeId = transactionTypeId;
+        AccountId = accountId;
         Description = description;
         Amount = amount;
         Date = date;
