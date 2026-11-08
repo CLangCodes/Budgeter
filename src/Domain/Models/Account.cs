@@ -43,6 +43,12 @@ public class Account : Entity
         StartingBalance = startingBalance;
         UpdatedAt = utcNow;
     }
+
+    public void UpdateBalance(decimal updatedBalance, DateTime utcNow)
+    {
+        StartingBalance = updatedBalance;
+        UpdatedAt = utcNow;
+    }
 }
 
 public static class AccountErrors
