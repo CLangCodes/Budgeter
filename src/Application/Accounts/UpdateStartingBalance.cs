@@ -6,18 +6,18 @@ using SharedKernel;
 
 namespace Application.Accounts;
 
-public sealed record UpdateAccountBalanceCommand(
+public sealed record UpdateStartingBalanceCommand(
     Guid AccountId,
-    decimal UpdatedAccountBalance
+    decimal UpdateStartingBalance
 ) : ICommand;
 
 internal sealed class UpdateAccountBalanceCommandHandler(
     IApplicationDbContext context,
     IDateTimeProvider dateTimeProvider
-) : ICommandHandler<UpdateAccountBalanceCommand>
+) : ICommandHandler<UpdateStartingBalanceCommand>
 {
     public async Task<Result> Handle(
-        UpdateAccountBalanceCommand command, 
+        UpdateStartingBalanceCommand command, 
         CancellationToken cancellationToken)
     {
         Account? account = await context.Accounts
@@ -29,8 +29,8 @@ internal sealed class UpdateAccountBalanceCommandHandler(
             {return Result.Failure(
                 AccountErrors.NotFound(command.AccountId));}
 
-        account.UpdateBalance(
-            command.UpdatedAccountBalance,
+        account.UpdateStartingBalance(
+            command.UpdateStartingBalance,
             dateTimeProvider.UtcNow);
 
         await context.SaveChangesAsync(cancellationToken);
