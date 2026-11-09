@@ -7,6 +7,7 @@ namespace Application.Transactions;
 
 public sealed record CreateTransactionCommand(
     int TransactionTypeId,
+    Guid AccountId,
     string Description,
     decimal Amount,
     DateTime Date,
@@ -20,6 +21,7 @@ internal sealed class CreateTransactionCommandHandler(
     {
         Transaction transaction = Transaction.Create(
             command.TransactionTypeId,
+            command.AccountId,
             command.Description ?? string.Empty,
             command.Amount,
             command.Date,

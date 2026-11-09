@@ -6,7 +6,6 @@ using Application.Abstractions.Data;
 namespace Application.Transactions;
 
 public sealed record GetTransactionsQuery() : IQuery<GetTransactionsResult>;
-public sealed record TransactionDetail(int Id, int TransactionTypeId, string Description, decimal Amount, DateTime Date, string Category);
 public sealed record GetTransactionsResult(List<TransactionDetail> TransactionDetails);
 
 internal class GetTransactionQueryHandler(IApplicationDbContext context) : IQueryHandler<GetTransactionsQuery, GetTransactionsResult>
@@ -17,6 +16,7 @@ internal class GetTransactionQueryHandler(IApplicationDbContext context) : IQuer
             .AsNoTracking()
             .Select(t => new TransactionDetail(
                 t.Id,
+                t.AccountId ?? Guid.Empty,
                 t.TransactionTypeId,
                 t.Description,
                 t.Amount,

@@ -11,6 +11,7 @@ internal sealed class UpdateTransactionEndpoint : IEndpoint
 {
     internal sealed record UpdateTransactionRequest(
         int TransactionTypeId,
+        Guid AccountId,
         string Description,
         decimal Amount,
         DateTime Date,
@@ -28,6 +29,7 @@ internal sealed class UpdateTransactionEndpoint : IEndpoint
             Result result = await handler.Handle(
                 new UpdateTransactionCommand(
                     transactionId,
+                    request.AccountId,
                     request.TransactionTypeId,
                     request.Description,
                     request.Amount,

@@ -17,6 +17,34 @@ namespace Infrastructure.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.14");
 
+            modelBuilder.Entity("Domain.Models.Account", b =>
+                {
+                    b.Property<Guid>("AccountId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AccountType")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NickName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("StartingBalance")
+                        .HasColumnType("REAL");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("AccountId");
+
+                    b.ToTable("Accounts", (string)null);
+                });
+
             modelBuilder.Entity("Domain.Models.BudgetItem", b =>
                 {
                     b.Property<Guid>("BudgetItemId")
@@ -51,7 +79,7 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("BudgetItems");
+                    b.ToTable("BudgetItems", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Category", b =>
@@ -77,7 +105,7 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasKey("CategoryId");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
 
                     b.HasData(
                         new
@@ -1104,6 +1132,9 @@ namespace Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<Guid?>("AccountId")
+                        .HasColumnType("TEXT");
+
                     b.Property<decimal>("Amount")
                         .HasColumnType("TEXT");
 
@@ -1123,7 +1154,9 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Transactions");
+                    b.HasIndex("AccountId");
+
+                    b.ToTable("Transactions", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.BudgetItem", b =>
@@ -1133,6 +1166,19 @@ namespace Infrastructure.Data.Migrations
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Models.Transaction", b =>
+                {
+                    b.HasOne("Domain.Models.Account", null)
+                        .WithMany("Transactions")
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Domain.Models.Account", b =>
+                {
+                    b.Navigation("Transactions");
                 });
 #pragma warning restore 612, 618
         }
