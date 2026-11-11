@@ -24,6 +24,7 @@ internal class GetTransactionsByAccountIdQueryHandler(IApplicationDbContext cont
                 t.Description,
                 t.Amount,
                 t.Date,
+                t.CategoryId,
                 t.Category))
             .ToListAsync(cancellationToken);
 

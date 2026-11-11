@@ -13,6 +13,7 @@ public class Transaction : Entity
     public string Description { get; set; } = string.Empty;
     public decimal Amount { get; set; }
     public DateTime Date { get; set; }
+    public Guid? CategoryId { get; set; }
     public string Category { get; set; } = string.Empty;
     
     public static Transaction Create(
@@ -21,6 +22,7 @@ public class Transaction : Entity
         string description,
         decimal amount,
         DateTime date,
+        Guid? categoryId,
         string category
     )
         {
@@ -31,6 +33,7 @@ public class Transaction : Entity
                 Description = description,
                 Amount = amount,
                 Date = date,
+                CategoryId = categoryId,
                 Category = category
             };
         }
@@ -41,6 +44,7 @@ public class Transaction : Entity
         string description,
         decimal amount,
         DateTime date,
+        Guid? categoryId,
         string category)
     {
         TransactionTypeId = transactionTypeId;
@@ -48,6 +52,7 @@ public class Transaction : Entity
         Description = description;
         Amount = amount;
         Date = date;
+        CategoryId = categoryId;
         Category = category;
     }
 }

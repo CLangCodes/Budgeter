@@ -15,6 +15,7 @@ internal sealed class UpdateTransactionEndpoint : IEndpoint
         string Description,
         decimal Amount,
         DateTime Date,
+        Guid? CategoryId,
         string Category);
 
     public void MapEndpoint(IEndpointRouteBuilder app)
@@ -34,6 +35,7 @@ internal sealed class UpdateTransactionEndpoint : IEndpoint
                     request.Description,
                     request.Amount,
                     request.Date,
+                    request.CategoryId,
                     request.Category
                     ),
                 cancellationToken).ConfigureAwait(false);

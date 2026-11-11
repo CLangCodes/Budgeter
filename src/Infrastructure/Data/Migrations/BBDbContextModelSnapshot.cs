@@ -42,7 +42,7 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasKey("AccountId");
 
-                    b.ToTable("Accounts", (string)null);
+                    b.ToTable("Accounts");
                 });
 
             modelBuilder.Entity("Domain.Models.BudgetItem", b =>
@@ -79,7 +79,7 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("BudgetItems", (string)null);
+                    b.ToTable("BudgetItems");
                 });
 
             modelBuilder.Entity("Domain.Models.Category", b =>
@@ -105,7 +105,7 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasKey("CategoryId");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
 
                     b.HasData(
                         new
@@ -1142,6 +1142,9 @@ namespace Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("CategoryId")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("Date")
                         .HasColumnType("TEXT");
 
@@ -1156,7 +1159,9 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasIndex("AccountId");
 
-                    b.ToTable("Transactions", (string)null);
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Transactions");
                 });
 
             modelBuilder.Entity("Domain.Models.BudgetItem", b =>
@@ -1173,6 +1178,11 @@ namespace Infrastructure.Data.Migrations
                     b.HasOne("Domain.Models.Account", null)
                         .WithMany("Transactions")
                         .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Domain.Models.Category", null)
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

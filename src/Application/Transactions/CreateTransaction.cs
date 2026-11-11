@@ -11,6 +11,7 @@ public sealed record CreateTransactionCommand(
     string Description,
     decimal Amount,
     DateTime Date,
+    Guid? CategoryId,
     string Category) : ICommand<int>;
 
 internal sealed class CreateTransactionCommandHandler(
@@ -25,6 +26,7 @@ internal sealed class CreateTransactionCommandHandler(
             command.Description ?? string.Empty,
             command.Amount,
             command.Date,
+            command.CategoryId,
             command.Category
         );
 
