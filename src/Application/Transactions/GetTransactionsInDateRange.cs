@@ -15,14 +15,17 @@ internal class GetTransactionsInDateRangeQueryHandler(IApplicationDbContext cont
         var transactions = await context.Transactions
             .AsNoTracking()
             .Where(t => t.Date >= query.StartDate && t.Date <= query.EndDate)
+            .Include(t => t.Category)
             .Select(t => new TransactionDetail(
                 t.Id,
                 t.AccountId ?? Guid.Empty,
                 t.TransactionTypeId,
                 t.Description,
-                t.Amount,
+                t.Amount,   
                 t.Date,
-                t.Category))
+                t.CategoryId,
+                t.Category!.CategoryName ?? string.Empty,
+                t.Category.Description))
             .ToListAsync(cancellationToken);
 
         return new GetTransactionsInDateRangeResult(transactions);

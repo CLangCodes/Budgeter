@@ -13,16 +13,14 @@ public sealed record UpdateTransactionCommand(
     string Description, 
     decimal Amount, 
     DateTime Date, 
-    string Category
+    Guid? CategoryId
 ) : ICommand;
-
 
 internal sealed class UpdateTransactionCommandHandler(IApplicationDbContext context
     ) : ICommandHandler<UpdateTransactionCommand>
 {
     public async Task<Result> Handle(UpdateTransactionCommand command, CancellationToken cancellationToken)
     {
-
         var transaction = await context.Transactions
             .SingleOrDefaultAsync(g => g.Id == command.TransactionId, cancellationToken);
 
@@ -34,7 +32,7 @@ internal sealed class UpdateTransactionCommandHandler(IApplicationDbContext cont
             command.Description,
             command.Amount,
             command.Date,
-            command.Description
+            command.CategoryId
             );
 
         await context.SaveChangesAsync(cancellationToken);

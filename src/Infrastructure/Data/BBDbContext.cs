@@ -19,10 +19,10 @@ public class BBDbContext(DbContextOptions<BBDbContext> options)
     {
         builder.ApplyConfigurationsFromAssembly(typeof(BBDbContext).Assembly);
 
-        builder.Entity<Transaction>(entity =>
-        {
-            entity.HasKey(t => t.Id);
-        });
+        // builder.Entity<Transaction>(entity =>
+        // {
+        //     entity.HasKey(t => t.Id);
+        // });
         base.OnModelCreating(builder);
     }
 }

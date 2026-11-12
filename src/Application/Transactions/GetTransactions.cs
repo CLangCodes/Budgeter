@@ -21,7 +21,9 @@ internal class GetTransactionQueryHandler(IApplicationDbContext context) : IQuer
                 t.Description,
                 t.Amount,
                 t.Date,
-                t.Category))
+                t.CategoryId,
+                t.Category!.CategoryName ?? string.Empty,
+                t.Category.Description))
             .ToListAsync(cancellationToken);
 
         return new GetTransactionsResult(transactions);
