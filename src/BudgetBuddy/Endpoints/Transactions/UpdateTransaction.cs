@@ -35,8 +35,7 @@ internal sealed class UpdateTransactionEndpoint : IEndpoint
                     request.Description,
                     request.Amount,
                     request.Date,
-                    request.CategoryId,
-                    request.Category
+                    request.CategoryId
                     ),
                 cancellationToken).ConfigureAwait(false);
             return result.Match(Results.NoContent, CustomResults.Problem);

@@ -26,8 +26,7 @@ internal sealed class CreateTransactionCommandHandler(
             command.Description ?? string.Empty,
             command.Amount,
             command.Date,
-            command.CategoryId,
-            command.Category
+            command.CategoryId
         );
 
         context.Transactions.Add(transaction);

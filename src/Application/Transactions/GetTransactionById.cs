@@ -14,7 +14,7 @@ public sealed record GetTransactionResult(
     string Description,
     decimal Amount,
     DateTime Date,
-    string Category);
+    Guid? CategoryId);
 
 internal sealed class GetTransactionByIdQueryHandler(IApplicationDbContext context)
     : IQueryHandler<GetTransactionByIdQuery, GetTransactionResult>
@@ -30,7 +30,7 @@ internal sealed class GetTransactionByIdQueryHandler(IApplicationDbContext conte
                 transaction.Description,
                 transaction.Amount,
                 transaction.Date,
-                transaction.Category
+                transaction.CategoryId
             ))
             .SingleOrDefaultAsync(cancellationToken);
         if (transaction is null)

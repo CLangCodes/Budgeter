@@ -14,7 +14,6 @@ public class Transaction : Entity
     public decimal Amount { get; set; }
     public DateTime Date { get; set; }
     public Guid? CategoryId { get; set; }
-    public string Category { get; set; } = string.Empty;
     
     public static Transaction Create(
         int transactionTypeId,
@@ -22,8 +21,7 @@ public class Transaction : Entity
         string description,
         decimal amount,
         DateTime date,
-        Guid? categoryId,
-        string category
+        Guid? categoryId
     )
         {
             return new Transaction
@@ -34,7 +32,6 @@ public class Transaction : Entity
                 Amount = amount,
                 Date = date,
                 CategoryId = categoryId,
-                Category = category
             };
         }
 
@@ -44,8 +41,7 @@ public class Transaction : Entity
         string description,
         decimal amount,
         DateTime date,
-        Guid? categoryId,
-        string category)
+        Guid? categoryId)
     {
         TransactionTypeId = transactionTypeId;
         AccountId = accountId;
@@ -53,7 +49,6 @@ public class Transaction : Entity
         Amount = amount;
         Date = date;
         CategoryId = categoryId;
-        Category = category;
     }
 }
 internal sealed class TransactionsNotFoundException : Exception

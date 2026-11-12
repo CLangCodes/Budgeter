@@ -13,8 +13,7 @@ public sealed record UpdateTransactionCommand(
     string Description, 
     decimal Amount, 
     DateTime Date, 
-    Guid? CategoryId,
-    string CategoryName
+    Guid? CategoryId
 ) : ICommand;
 
 internal sealed class UpdateTransactionCommandHandler(IApplicationDbContext context
@@ -33,8 +32,7 @@ internal sealed class UpdateTransactionCommandHandler(IApplicationDbContext cont
             command.Description,
             command.Amount,
             command.Date,
-            command.CategoryId,
-            command.CategoryName
+            command.CategoryId
             );
 
         await context.SaveChangesAsync(cancellationToken);
