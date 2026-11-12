@@ -10,9 +10,10 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
     {
         builder.HasKey(e => e.Id);
 
-        builder.HasOne<Category>()
+        builder.HasOne(tr => tr.Category)
             .WithMany()
             .HasForeignKey(e => e.CategoryId)
+            .IsRequired(false)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

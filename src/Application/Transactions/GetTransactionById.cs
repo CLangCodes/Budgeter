@@ -14,7 +14,9 @@ public sealed record GetTransactionResult(
     string Description,
     decimal Amount,
     DateTime Date,
-    Guid? CategoryId);
+    Guid? CategoryId,
+    string CategoryName,
+    string CategoryDescription);
 
 internal sealed class GetTransactionByIdQueryHandler(IApplicationDbContext context)
     : IQueryHandler<GetTransactionByIdQuery, GetTransactionResult>
@@ -22,7 +24,9 @@ internal sealed class GetTransactionByIdQueryHandler(IApplicationDbContext conte
     public async Task<Result<GetTransactionResult>> Handle(GetTransactionByIdQuery query, CancellationToken cancellationToken)
     {
         GetTransactionResult? transaction = await context.Transactions
+            .AsNoTracking()
             .Where(transaction => transaction.Id == query.TransactionId)
+            .Include(transaction => transaction.Category)
             .Select(transaction => new GetTransactionResult(
                 transaction.Id,
                 transaction.AccountId ?? Guid.Empty,
@@ -30,7 +34,9 @@ internal sealed class GetTransactionByIdQueryHandler(IApplicationDbContext conte
                 transaction.Description,
                 transaction.Amount,
                 transaction.Date,
-                transaction.CategoryId
+                transaction.CategoryId,
+                transaction.Category!.CategoryName ?? string.Empty,
+                transaction.Category.Description
             ))
             .SingleOrDefaultAsync(cancellationToken);
         if (transaction is null)

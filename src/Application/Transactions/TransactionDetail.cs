@@ -7,4 +7,6 @@ public sealed record TransactionDetail(
     string Description, 
     decimal Amount, 
     DateTime Date, 
-    Guid? CategoryId);
+    Guid? CategoryId,
+    string CategoryName,
+    string CategoryDescription);

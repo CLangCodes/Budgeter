@@ -15,8 +15,7 @@ internal sealed class UpdateTransactionEndpoint : IEndpoint
         string Description,
         decimal Amount,
         DateTime Date,
-        Guid? CategoryId,
-        string Category);
+        Guid? CategoryId);
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
