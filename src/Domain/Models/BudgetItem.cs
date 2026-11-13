@@ -8,6 +8,7 @@ public class BudgetItem : Entity
 {
     public Guid BudgetItemId { get; set; }
     public Guid CategoryId { get; set; }
+    public Guid? AccountId { get; set; }
     public string BudgetItemName { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
 
@@ -15,46 +16,55 @@ public class BudgetItem : Entity
     public int RecurrenceInterval { get; set; } = 1;     // every 1 month (2 = bi-monthly, 3 = quarterly)
     public DateOnly StartTrackingDate { get; set; }      // anchor: first due date, e.g. 2026-11-15
     public DateOnly? EndDate { get; set; }               // optional: loan payoff, cancelled subscription
+    public decimal Amount { get; set; } = 0.0m;          // Debit value; positive is a withdrawal, negative is a deposit (e.g. refund)
 
     public static BudgetItem Create(
         Guid categoryId,
+        Guid? accountId,
         string budgetItemName,
         string description,
         RecurrenceUnit recurrenceUnit,
         int recurrenceInterval,
         DateOnly startTrackingDate,
-        DateOnly? endDate
+        DateOnly? endDate,
+        decimal Amount
     )
         {
             return new BudgetItem
             {
                 BudgetItemId = Guid.NewGuid(),
                 CategoryId = categoryId,
+                AccountId = accountId,
                 BudgetItemName = budgetItemName,
                 Description = description,
                 RecurrenceUnit = recurrenceUnit,
                 RecurrenceInterval = recurrenceInterval,
                 StartTrackingDate = startTrackingDate,
-                EndDate = endDate
+                EndDate = endDate,
+                Amount = Amount
             };
         }
 
     public void Update(
         Guid categoryId,
+        Guid? accountId,
         string budgetItemName,
         string description,
         RecurrenceUnit recurrenceUnit,
         int recurrenceInterval,
         DateOnly startTrackingDate,
-        DateOnly? endDate)
+        DateOnly? endDate,
+        decimal amount)
     {
         CategoryId = categoryId;
+        AccountId = accountId;
         BudgetItemName = budgetItemName;
         Description = description;
         RecurrenceUnit = recurrenceUnit;
         RecurrenceInterval = recurrenceInterval;
         StartTrackingDate = startTrackingDate;
         EndDate = endDate;
+        Amount = amount;
     }
 
     public static Result ValidateRecurrence(int recurrenceInterval, DateOnly startTrackingDate, DateOnly? endDate)

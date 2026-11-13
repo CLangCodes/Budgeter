@@ -9,12 +9,14 @@ namespace Application.Budgets;
 public sealed record UpdateBudgetItemCommand(
     Guid BudgetItemId,
     Guid CategoryId,
+    Guid? AccountId,
     string BudgetItemName,
     string Description,
     RecurrenceUnit RecurrenceUnit,
     int RecurrenceInterval,
     DateOnly StartTrackingDate,
-    DateOnly? EndDate
+    DateOnly? EndDate,
+    decimal Amount
 ) : ICommand;
 
 internal sealed class UpdateBudgetItemCommandHandler(IApplicationDbContext context
@@ -42,12 +44,14 @@ internal sealed class UpdateBudgetItemCommandHandler(IApplicationDbContext conte
 
         budgetItem.Update(
             command.CategoryId,
+            command.AccountId,
             command.BudgetItemName,
             command.Description ?? string.Empty,
             command.RecurrenceUnit,
             command.RecurrenceInterval,
             command.StartTrackingDate,
-            command.EndDate);
+            command.EndDate,
+            command.Amount);
 
         await context.SaveChangesAsync(cancellationToken);
 

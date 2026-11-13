@@ -12,7 +12,7 @@ public sealed record UpdateTransactionCommand(
     int TransactionTypeId, 
     string Description, 
     decimal Amount, 
-    DateTime Date, 
+    DateOnly Date, 
     Guid? CategoryId
 ) : ICommand;
 

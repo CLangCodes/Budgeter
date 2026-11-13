@@ -8,12 +8,14 @@ namespace Application.Budgets;
 
 public sealed record CreateBudgetItemCommand(
     Guid CategoryId,
+    Guid? AccountId,
     string BudgetItemName,
     string Description,
     RecurrenceUnit RecurrenceUnit,
     int RecurrenceInterval,
     DateOnly StartTrackingDate,
-    DateOnly? EndDate) : ICommand<Guid>;
+    DateOnly? EndDate,
+    decimal Amount) : ICommand<Guid>;
 
 internal sealed class CreateBudgetItemCommandHandler(
     IApplicationDbContext context
@@ -35,12 +37,14 @@ internal sealed class CreateBudgetItemCommandHandler(
 
         BudgetItem budgetItem = BudgetItem.Create(
             command.CategoryId,
+            command.AccountId,
             command.BudgetItemName,
             command.Description ?? string.Empty,
             command.RecurrenceUnit,
             command.RecurrenceInterval,
             command.StartTrackingDate,
-            command.EndDate
+            command.EndDate,
+            command.Amount
         );
 
         context.BudgetItems.Add(budgetItem);

@@ -21,7 +21,7 @@ internal sealed class CreateAccountCommandHandler(
             command.NickName ?? string.Empty,
             command.AccountType,
             command.StartingBalance,
-            dateTimeProvider.UtcNow);
+            dateTimeProvider.UtcNowDateOnly);
 
         context.Accounts.Add(account);
         await context.SaveChangesAsync(cancellationToken);

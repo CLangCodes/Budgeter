@@ -11,15 +11,16 @@ public class Account : Entity
     public string NickName { get; set; } = string.Empty;
     public AccountType AccountType { get; set; }
     public decimal StartingBalance { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
+    public DateOnly CreatedAt { get; set; }
+    public DateOnly UpdatedAt { get; set; }
     public decimal Balance => StartingBalance - Transactions.Sum(t => t.Amount);
+    public List<BudgetItem> BudgetItems { get; set; } = [];
 
     public static Account Create(
         string nickName,
         AccountType accountType,
         decimal startingBalance,
-        DateTime utcNow)
+        DateOnly utcNow)
     {
         return new Account
         {
@@ -36,7 +37,7 @@ public class Account : Entity
         string nickName,
         AccountType accountType,
         decimal startingBalance,
-        DateTime utcNow)
+        DateOnly utcNow)
     {
         NickName = nickName;
         AccountType = accountType;
@@ -44,7 +45,7 @@ public class Account : Entity
         UpdatedAt = utcNow;
     }
 
-    public void UpdateStartingBalance(decimal updatedStartingBalance, DateTime utcNow)
+    public void UpdateStartingBalance(decimal updatedStartingBalance, DateOnly utcNow)
     {
         StartingBalance = updatedStartingBalance;
         UpdatedAt = utcNow;

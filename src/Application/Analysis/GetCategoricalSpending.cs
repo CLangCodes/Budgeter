@@ -7,8 +7,8 @@ namespace Application.Analysis;
 
 public sealed record GetCategoricalSpendingQuery(
     Guid AccountId,
-    DateTime StartDate,
-    DateTime EndDate
+    DateOnly StartDate,
+    DateOnly EndDate
 ) : IQuery<CategoricalSpendingResult>;
 
 public sealed record CategoricalSpending(

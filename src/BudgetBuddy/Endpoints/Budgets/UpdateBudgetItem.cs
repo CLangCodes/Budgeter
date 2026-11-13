@@ -12,12 +12,14 @@ internal sealed class UpdateBudgetItemEndpoint : IEndpoint
 {
     internal sealed record UpdateBudgetItemRequest(
         Guid CategoryId,
+        Guid? AccountId,
         string BudgetItemName,
         string Description,
         RecurrenceUnit RecurrenceUnit,
         int RecurrenceInterval,
         DateOnly StartTrackingDate,
-        DateOnly? EndDate);
+        DateOnly? EndDate,
+        decimal Amount);
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
@@ -32,12 +34,14 @@ internal sealed class UpdateBudgetItemEndpoint : IEndpoint
                 new UpdateBudgetItemCommand(
                     budgetItemId,
                     request.CategoryId,
+                    request.AccountId,
                     request.BudgetItemName,
                     request.Description,
                     request.RecurrenceUnit,
                     request.RecurrenceInterval,
                     request.StartTrackingDate,
-                    request.EndDate
+                    request.EndDate,
+                    request.Amount
                     ),
                 cancellationToken).ConfigureAwait(false);
             return result.Match(Results.NoContent, CustomResults.Problem);
