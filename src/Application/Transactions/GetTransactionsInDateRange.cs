@@ -12,10 +12,11 @@ internal class GetTransactionsInDateRangeQueryHandler(IApplicationDbContext cont
 {
     public async Task<Result<GetTransactionsInDateRangeResult>> Handle(GetTransactionsInDateRangeQuery query, CancellationToken cancellationToken)
     {
-        var transactions = await context.Transactions
+        List<TransactionDetail> transactions = await context.Transactions
             .AsNoTracking()
             .Where(t => t.Date >= query.StartDate && t.Date <= query.EndDate)
             .Include(t => t.Category)
+            .OrderByDescending(t => t.Date)
             .Select(t => new TransactionDetail(
                 t.Id,
                 t.AccountId ?? Guid.Empty,
@@ -26,6 +27,7 @@ internal class GetTransactionsInDateRangeQueryHandler(IApplicationDbContext cont
                 t.CategoryId,
                 t.Category!.CategoryName ?? string.Empty,
                 t.Category.Description))
+                
             .ToListAsync(cancellationToken);
 
         return new GetTransactionsInDateRangeResult(transactions);

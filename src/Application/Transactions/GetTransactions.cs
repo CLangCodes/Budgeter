@@ -14,6 +14,7 @@ internal class GetTransactionQueryHandler(IApplicationDbContext context) : IQuer
     {
         var transactions = await context.Transactions
             .AsNoTracking()
+            .Include(tr => tr.Category)
             .Select(t => new TransactionDetail(
                 t.Id,
                 t.AccountId ?? Guid.Empty,
@@ -24,6 +25,7 @@ internal class GetTransactionQueryHandler(IApplicationDbContext context) : IQuer
                 t.CategoryId,
                 t.Category!.CategoryName ?? string.Empty,
                 t.Category.Description))
+            .OrderByDescending(t => t.Date)
             .ToListAsync(cancellationToken);
 
         return new GetTransactionsResult(transactions);

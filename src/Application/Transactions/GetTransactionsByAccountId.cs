@@ -28,6 +28,7 @@ internal class GetTransactionsByAccountIdQueryHandler(IApplicationDbContext cont
                 t.CategoryId,
                 t.Category!.CategoryName ?? string.Empty,
                 t.Category.Description))
+            .OrderByDescending(t => t.Date)
             .ToListAsync(cancellationToken);
 
         return new GetTransactionsByAccountIdResult(transactions);
