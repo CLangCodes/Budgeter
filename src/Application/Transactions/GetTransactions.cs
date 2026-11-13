@@ -5,16 +5,27 @@ using Application.Abstractions.Data;
 
 namespace Application.Transactions;
 
-public sealed record GetTransactionsQuery() : IQuery<GetTransactionsResult>;
+/// <summary>
+/// Retrieves transactions, optionally bounded by an inclusive date range.
+/// A null bound means that side of the range is open.
+/// </summary>
+public sealed record GetTransactionsQuery(DateOnly? StartDate = null, DateOnly? EndDate = null) : IQuery<GetTransactionsResult>;
 public sealed record GetTransactionsResult(List<TransactionDetail> TransactionDetails);
 
-internal class GetTransactionQueryHandler(IApplicationDbContext context) : IQueryHandler<GetTransactionsQuery, GetTransactionsResult>
+internal sealed class GetTransactionsQueryHandler(IApplicationDbContext context) : IQueryHandler<GetTransactionsQuery, GetTransactionsResult>
 {
     public async Task<Result<GetTransactionsResult>> Handle(GetTransactionsQuery query, CancellationToken cancellationToken)
     {
-        var transactions = await context.Transactions
-            .AsNoTracking()
-            .Include(tr => tr.Category)
+        var transactions = context.Transactions.AsNoTracking();
+
+        if (query.StartDate is { } start)
+            transactions = transactions.Where(t => t.Date >= start);
+
+        if (query.EndDate is { } end)
+            transactions = transactions.Where(t => t.Date <= end);
+
+        List<TransactionDetail> details = await transactions
+            .OrderByDescending(t => t.Date)
             .Select(t => new TransactionDetail(
                 t.Id,
                 t.AccountId ?? Guid.Empty,
@@ -25,9 +36,8 @@ internal class GetTransactionQueryHandler(IApplicationDbContext context) : IQuer
                 t.CategoryId,
                 t.Category!.CategoryName ?? string.Empty,
                 t.Category.Description))
-            .OrderByDescending(t => t.Date)
             .ToListAsync(cancellationToken);
 
-        return new GetTransactionsResult(transactions);
+        return new GetTransactionsResult(details);
     }
 }

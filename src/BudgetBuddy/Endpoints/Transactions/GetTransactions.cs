@@ -7,22 +7,24 @@ internal sealed class GetTransactionsEndpoint : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapGet("/v1/transactions/", async (HttpContext httpContext,
+        app.MapGet("/v1/transactions", async (
+        DateOnly? startDate,
+        DateOnly? endDate,
         IQueryHandler<GetTransactionsQuery, GetTransactionsResult> handler,
         CancellationToken cancellationToken) =>
         {
-            try
-            {
-                var result = await handler.Handle(
-                    new GetTransactionsQuery(), cancellationToken).ConfigureAwait(false);
-                return Results.Ok(result.Value);                
-            } catch
-            {
-                return Results.Problem("There was a problem retrieving Transactions.");
-            }
+            if (startDate > endDate)
+                return Results.BadRequest("startDate must be before endDate.");
+
+            var result = await handler.Handle(
+                new GetTransactionsQuery(startDate, endDate), cancellationToken);
+
+            return result.IsSuccess
+                ? Results.Ok(result.Value)
+                : Results.Problem("There was a problem retrieving Transactions.");
         })
-        .Accepts<GetTransactionsQuery>("application/json")
         .WithTags(Tags.Transactions)
-        .Produces<GetTransactionsResult>();
+        .Produces<GetTransactionsResult>()
+        .ProducesProblem(StatusCodes.Status400BadRequest);
     }
 }
