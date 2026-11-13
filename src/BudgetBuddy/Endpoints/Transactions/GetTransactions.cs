@@ -8,6 +8,7 @@ internal sealed class GetTransactionsEndpoint : IEndpoint
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
         app.MapGet("/v1/transactions", async (
+        Guid? accountId,
         DateOnly? startDate,
         DateOnly? endDate,
         IQueryHandler<GetTransactionsQuery, GetTransactionsResult> handler,
@@ -17,7 +18,7 @@ internal sealed class GetTransactionsEndpoint : IEndpoint
                 return Results.BadRequest("startDate must be before endDate.");
 
             var result = await handler.Handle(
-                new GetTransactionsQuery(startDate, endDate), cancellationToken);
+                new GetTransactionsQuery(accountId, startDate, endDate), cancellationToken);
 
             return result.IsSuccess
                 ? Results.Ok(result.Value)
