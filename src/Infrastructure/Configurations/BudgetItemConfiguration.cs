@@ -13,7 +13,7 @@ internal sealed class BudgetItemConfiguration : IEntityTypeConfiguration<BudgetI
         builder.Property(e => e.RecurrenceUnit)
             .HasConversion<string>();
 
-        builder.HasOne<Category>()
+        builder.HasOne(b => b.Category)
             .WithMany()
             .HasForeignKey(e => e.CategoryId)
             .OnDelete(DeleteBehavior.Restrict);
