@@ -21,5 +21,10 @@ internal sealed class AccountConfiguration : IEntityTypeConfiguration<Account>
             .WithOne()
             .HasForeignKey(t => t.AccountId)
             .OnDelete(DeleteBehavior.Restrict);
+            
+        builder.HasMany(ac => ac.BudgetItems)
+            .WithOne()
+            .HasForeignKey(bi => bi.AccountId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

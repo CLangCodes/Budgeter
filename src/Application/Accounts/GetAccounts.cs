@@ -12,8 +12,8 @@ public sealed record AccountDetail(
     string NickName,
     AccountType AccountType,
     decimal StartingBalance,
-    DateTime CreatedAt,
-    DateTime UpdatedAt
+    DateOnly CreatedAt,
+    DateOnly UpdatedAt
 );
 public sealed record GetAccountsResult(List<AccountDetail> Accounts);
 

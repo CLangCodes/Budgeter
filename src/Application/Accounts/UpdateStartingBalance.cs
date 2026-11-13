@@ -31,7 +31,7 @@ internal sealed class UpdateAccountBalanceCommandHandler(
 
         account.UpdateStartingBalance(
             command.UpdateStartingBalance,
-            dateTimeProvider.UtcNow);
+            dateTimeProvider.UtcNowDateOnly);
 
         await context.SaveChangesAsync(cancellationToken);
 

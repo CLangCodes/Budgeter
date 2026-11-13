@@ -10,13 +10,14 @@ internal sealed class GetBudgetItemByIdEndpoint : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapGet("/v1/budgets/{budgetItemId:Guid}", async (
+        app.MapGet("/v1/budgets/{budgetItemId:Guid}/{accountId:Guid}", async (
         Guid budgetItemId,
+        Guid? accountId,
         IQueryHandler<GetBudgetItemByIdQuery, GetBudgetItemResult> handler,
         CancellationToken cancellationToken) =>
         {
             Result<GetBudgetItemResult> result = await handler.Handle(
-                new GetBudgetItemByIdQuery(budgetItemId), cancellationToken).ConfigureAwait(false);
+                new GetBudgetItemByIdQuery(budgetItemId, accountId), cancellationToken).ConfigureAwait(false);
             return result.Match(Results.Ok, CustomResults.Problem);
         })
         .WithTags(Tags.Budgets)

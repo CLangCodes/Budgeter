@@ -30,7 +30,7 @@ internal sealed class UpdateAccountCommandHandler(
             command.NickName ?? string.Empty,
             command.AccountType,
             command.StartingBalance,
-            dateTimeProvider.UtcNow);
+            dateTimeProvider.UtcNowDateOnly);
 
         await context.SaveChangesAsync(cancellationToken);
 

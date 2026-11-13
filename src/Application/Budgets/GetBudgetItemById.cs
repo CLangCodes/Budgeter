@@ -6,10 +6,11 @@ using SharedKernel;
 
 namespace Application.Budgets;
 
-public sealed record GetBudgetItemByIdQuery(Guid BudgetItemId) : IQuery<GetBudgetItemResult>;
+public sealed record GetBudgetItemByIdQuery(Guid BudgetItemId, Guid? AccountId) : IQuery<GetBudgetItemResult>;
 public sealed record GetBudgetItemResult(
     Guid BudgetItemId,
     Guid CategoryId,
+    Guid? AccountId,
     string BudgetItemName,
     string Description,
     RecurrenceUnit RecurrenceUnit,
@@ -27,6 +28,7 @@ internal sealed class GetBudgetItemByIdQueryHandler(IApplicationDbContext contex
             .Select(e => new GetBudgetItemResult(
                 e.BudgetItemId,
                 e.CategoryId,
+                e.AccountId,
                 e.BudgetItemName,
                 e.Description,
                 e.RecurrenceUnit,

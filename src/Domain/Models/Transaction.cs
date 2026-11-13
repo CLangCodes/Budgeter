@@ -12,7 +12,7 @@ public class Transaction : Entity
     public int TransactionTypeId { get; set; } // 0 for Income, 1 for Expense
     public string Description { get; set; } = string.Empty;
     public decimal Amount { get; set; }
-    public DateTime Date { get; set; }
+    public DateOnly Date { get; set; }
     public Guid? CategoryId { get; set; }
     public Category? Category { get; set; }
     
@@ -21,7 +21,7 @@ public class Transaction : Entity
         Guid accountId,
         string description,
         decimal amount,
-        DateTime date,
+        DateOnly date,
         Guid? categoryId
     )
         {
@@ -41,7 +41,7 @@ public class Transaction : Entity
         Guid accountId,
         string description,
         decimal amount,
-        DateTime date,
+        DateOnly date,
         Guid? categoryId)
     {
         TransactionTypeId = transactionTypeId;

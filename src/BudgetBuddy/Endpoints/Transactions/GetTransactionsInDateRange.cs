@@ -8,12 +8,12 @@ internal sealed class GetTransactionsInDateRangeEndpoint : IEndpoint
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
         app.MapGet("/v1/transactions", async (
-        DateTime? startDate,
-        DateTime? endDate,
+        DateOnly? startDate,
+        DateOnly? endDate,
         IQueryHandler<GetTransactionsInDateRangeQuery, GetTransactionsInDateRangeResult> handler,
         CancellationToken cancellationToken) =>
         {
-            var end = endDate ?? DateTime.UtcNow;
+            var end = endDate ?? DateOnly.FromDateTime(DateTime.UtcNow);
             var start = startDate ?? end.AddDays(-30);
 
             if (start > end)
@@ -29,6 +29,5 @@ internal sealed class GetTransactionsInDateRangeEndpoint : IEndpoint
         .WithTags(Tags.Transactions)
         .Produces<GetTransactionsInDateRangeResult>()
         .ProducesProblem(StatusCodes.Status400BadRequest);
-
     }
 }

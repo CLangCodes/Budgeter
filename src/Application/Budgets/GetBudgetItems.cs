@@ -10,12 +10,14 @@ public sealed record GetBudgetItemsQuery() : IQuery<GetBudgetItemsResult>;
 public sealed record BudgetItemDetail(
     Guid BudgetItemId,
     Guid CategoryId,
+    Guid? AccountId,
     string BudgetItemName,
     string Description,
     RecurrenceUnit RecurrenceUnit,
     int RecurrenceInterval,
     DateOnly StartTrackingDate,
-    DateOnly? EndDate
+    DateOnly? EndDate,
+    decimal Amount
 );
 public sealed record GetBudgetItemsResult(List<BudgetItemDetail> BudgetItems);
 
@@ -29,12 +31,14 @@ internal sealed class GetBudgetItemsQueryHandler(IApplicationDbContext context) 
             .Select(e => new BudgetItemDetail(
                 e.BudgetItemId,
                 e.CategoryId,
+                e.AccountId,
                 e.BudgetItemName,
                 e.Description,
                 e.RecurrenceUnit,
                 e.RecurrenceInterval,
                 e.StartTrackingDate,
-                e.EndDate))
+                e.EndDate,
+                e.Amount))
             .ToListAsync(cancellationToken);
 
         return new GetBudgetItemsResult(budgetItems);

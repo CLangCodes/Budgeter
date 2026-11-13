@@ -12,8 +12,8 @@ public sealed record GetAccountResult(
     string NickName,
     AccountType AccountType,
     decimal StartingBalance,
-    DateTime CreatedAt,
-    DateTime UpdatedAt);
+    DateOnly CreatedAt,
+    DateOnly UpdatedAt);
 
 internal sealed class GetAccountByIdQueryHandler(IApplicationDbContext context)
     : IQueryHandler<GetAccountByIdQuery, GetAccountResult>

@@ -10,7 +10,7 @@ public sealed record CreateTransactionCommand(
     Guid AccountId,
     string Description,
     decimal Amount,
-    DateTime Date,
+    DateOnly Date,
     Guid? CategoryId) : ICommand<int>;
 
 internal sealed class CreateTransactionCommandHandler(

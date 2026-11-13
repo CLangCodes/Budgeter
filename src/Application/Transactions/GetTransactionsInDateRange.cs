@@ -5,7 +5,7 @@ using Application.Abstractions.Data;
 
 namespace Application.Transactions;
 
-public sealed record GetTransactionsInDateRangeQuery(DateTime StartDate, DateTime EndDate) : IQuery<GetTransactionsInDateRangeResult>;
+public sealed record GetTransactionsInDateRangeQuery(DateOnly StartDate, DateOnly EndDate) : IQuery<GetTransactionsInDateRangeResult>;
 public sealed record GetTransactionsInDateRangeResult(List<TransactionDetail> TransactionDetails);
 
 internal class GetTransactionsInDateRangeQueryHandler(IApplicationDbContext context) : IQueryHandler<GetTransactionsInDateRangeQuery, GetTransactionsInDateRangeResult>
