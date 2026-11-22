@@ -26,7 +26,7 @@ internal class GetCategoricalSpendingQueryHandler(IApplicationDbContext context)
     {
         var spendingByCategory = await context.Transactions
             .Where(t => t.AccountId == query.AccountId && t.Date >= query.StartDate && t.Date <= query.EndDate)
-            .GroupBy(t => t.Category.CategoryName)
+            .GroupBy(t => t.Category!.CategoryName)
             .Select(g => new CategoricalSpending(
                 CategoryName: g.Key ?? "Uncategorized",
                 TotalAmount: g.Sum(t => t.Amount)
