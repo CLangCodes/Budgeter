@@ -8,6 +8,7 @@ public class BudgetItem : Entity
 {
     public Guid BudgetItemId { get; set; }
     public Guid CategoryId { get; set; }
+    public Category? Category { get; set; }
     public Guid? AccountId { get; set; }
     public string BudgetItemName { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;

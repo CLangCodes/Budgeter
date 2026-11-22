@@ -42,7 +42,7 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasKey("AccountId");
 
-                    b.ToTable("Accounts");
+                    b.ToTable("Accounts", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.BudgetItem", b =>
@@ -87,7 +87,7 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("BudgetItems");
+                    b.ToTable("BudgetItems", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Category", b =>
@@ -113,7 +113,7 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasKey("CategoryId");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
 
                     b.HasData(
                         new
@@ -1165,7 +1165,7 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Transactions");
+                    b.ToTable("Transactions", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.BudgetItem", b =>

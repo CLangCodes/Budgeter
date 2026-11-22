@@ -10,6 +10,8 @@ public sealed record GetBudgetItemByIdQuery(Guid BudgetItemId, Guid? AccountId) 
 public sealed record GetBudgetItemResult(
     Guid BudgetItemId,
     Guid CategoryId,
+    string CategoryName,
+    string CategoryDescription,
     Guid? AccountId,
     string BudgetItemName,
     string Description,
@@ -25,9 +27,12 @@ internal sealed class GetBudgetItemByIdQueryHandler(IApplicationDbContext contex
     {
         GetBudgetItemResult? budgetItem = await context.BudgetItems
             .Where(e => e.BudgetItemId == query.BudgetItemId)
+            .Include(b => b.Category)
             .Select(e => new GetBudgetItemResult(
                 e.BudgetItemId,
                 e.CategoryId,
+                e.Category!.CategoryName ?? string.Empty,
+                e.Category.Description ?? string.Empty,
                 e.AccountId,
                 e.BudgetItemName,
                 e.Description,
