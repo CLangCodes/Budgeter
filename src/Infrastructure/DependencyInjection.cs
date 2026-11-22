@@ -1,10 +1,17 @@
+using System.Text;
+using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
+using Infrastructure.Authentication;
 using Infrastructure.Data;
 using Infrastructure.Time;
+using Infrastructure.Users.Infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using SharedKernel;
 
 namespace Infrastructure;
@@ -16,7 +23,16 @@ public static class DependencyInjection
         IConfiguration configuration) =>
         services
             .AddServices()
-            .AddDatabase(configuration);
+            .AddDatabase(configuration)
+            .AddAuthenticationInternal(configuration)
+            .AddAuthorizationInternal();
+
+    private static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+
+        return services;
+    }
 
     private static IServiceCollection AddDatabase(
         this IServiceCollection services, 
@@ -42,10 +58,35 @@ public static class DependencyInjection
         return services;
     }
     
-    private static IServiceCollection AddServices(this IServiceCollection services)
+    private static IServiceCollection AddAuthenticationInternal(
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
-        services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(o =>
+            {
+                o.RequireHttpsMetadata = false;
+                o.TokenValidationParameters = new TokenValidationParameters
+                {
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Secret"]!)),
+                    ValidIssuer = configuration["Jwt:Issuer"],
+                    ValidAudience = configuration["Jwt:Audience"],
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
+
+        services.AddHttpContextAccessor();
+        services.AddSingleton<IPasswordHasher, PasswordHasher>();
+        services.AddSingleton<ITokenProvider, TokenProvider>();
 
         return services;
     }
+
+    private static IServiceCollection AddAuthorizationInternal(this IServiceCollection services)
+    {
+        services.AddAuthorization();
+
+        return services;
+    }
+
 }

@@ -34,6 +34,8 @@ if (app.Environment.IsDevelopment())
         options.WithTheme(ScalarTheme.Mars);
     });
 }
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseHttpsRedirection();
 
