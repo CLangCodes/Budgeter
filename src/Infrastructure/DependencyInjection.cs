@@ -6,7 +6,6 @@ using Infrastructure.Authorization;
 using Infrastructure.Data;
 using Infrastructure.Identity;
 using Infrastructure.Time;
-using Infrastructure.Users.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -65,8 +64,17 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
-            .AddEntityFrameworkStores<BBDbContext>();
+        // AddIdentityCore (not AddIdentity) so no cookie scheme overrides JWT as the default.
+        services.AddIdentityCore<ApplicationUser>(o =>
+            {
+                o.User.RequireUniqueEmail = true;
+                o.Lockout.MaxFailedAccessAttempts = 5;
+                o.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+            })
+            .AddRoles<IdentityRole<Guid>>()
+            .AddSignInManager()
+            .AddEntityFrameworkStores<BBDbContext>()
+            .AddDefaultTokenProviders();
             
         services.AddScoped<IIdentityService, IdentityService>();
             
@@ -86,7 +94,7 @@ public static class DependencyInjection
         services.AddHttpContextAccessor();
         services.AddScoped<IUserContext, UserContext>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
-        services.AddSingleton<ITokenProvider, TokenProvider>();
+        services.AddSingleton<TokenProvider>();
 
         return services;
     }

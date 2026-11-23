@@ -11,24 +11,26 @@ internal sealed class Login : IEndpoint
     public sealed record Request(
         string Email, 
         string Password, 
-        bool RememberMe);
+        bool RememberMe = false);
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
         app.MapPost("users/login", async (
             Request request,
-            ICommandHandler<LoginUserCommand> handler,
+            ICommandHandler<LoginUserCommand, string> handler,
             CancellationToken cancellationToken) =>
         {
             var command = new LoginUserCommand(
-                request.Email, 
-                request.Password, 
+                request.Email,
+                request.Password,
                 request.RememberMe);
 
-            Result result = await handler.Handle(command, cancellationToken);
-            
-            return result.Match(Results.SignIn, CustomResults.Problem);
+            Result<string> result = await handler.Handle(command, cancellationToken);
+
+            return result.Match(Results.Ok, CustomResults.Problem);
         })
+        .AllowAnonymous()
+        .Produces<string>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status401Unauthorized)
         .WithTags(Tags.Users);
     }

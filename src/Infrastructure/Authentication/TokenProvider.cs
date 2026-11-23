@@ -1,16 +1,15 @@
 using System.Security.Claims;
 using System.Text;
-using Application.Abstractions.Authentication;
-using Domain.Users;
+using Infrastructure.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Infrastructure.Users.Infrastructure;
+namespace Infrastructure.Authentication;
 
-internal sealed class TokenProvider(IConfiguration configuration) : ITokenProvider
+internal sealed class TokenProvider(IConfiguration configuration)
 {
-    public string Create(User user)
+    public string Create(ApplicationUser user, IEnumerable<string> roles)
     {
         string secretKey = configuration["Jwt:Secret"]
             ?? throw new InvalidOperationException("JWT secret is not configured.");
@@ -19,15 +18,17 @@ internal sealed class TokenProvider(IConfiguration configuration) : ITokenProvid
 
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
+        List<Claim> claims =
+        [
+            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
+            new("email_verified", user.EmailConfirmed.ToString().ToLowerInvariant())
+        ];
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity([
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("email_verified", user.EmailVerified.ToString().ToLower()),
-                new Claim(JwtRegisteredClaimNames.GivenName, user.FirstName),  
-                new Claim(JwtRegisteredClaimNames.FamilyName, user.LastName)
-            ]),
+            Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddMinutes(configuration.GetValue<int>("Jwt:ExpirationInMinutes")),
             SigningCredentials = credentials,
             Issuer = configuration["Jwt:Issuer"],
@@ -36,8 +37,6 @@ internal sealed class TokenProvider(IConfiguration configuration) : ITokenProvid
 
         var tokenHandler = new JsonWebTokenHandler();
 
-        string token = tokenHandler.CreateToken(tokenDescriptor);
-
-        return token;
+        return tokenHandler.CreateToken(tokenDescriptor);
     }
 }

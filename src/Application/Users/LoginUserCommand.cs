@@ -1,25 +1,17 @@
-﻿using System.Diagnostics;
-using Application.Abstractions.Authentication;
-using Application.Abstractions.Data;
+﻿using Application.Abstractions.Authentication;
 using Application.Abstractions.Messaging;
-using Domain.Users;
-using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
 namespace Application.Users.Login;
 
-public sealed record LoginUserCommand(string Email, string Password, bool RememberMe) : ICommand;
+public sealed record LoginUserCommand(string Email, string Password, bool RememberMe) : ICommand<string>;
 
 internal sealed class LoginUserCommandHandler(
-    IIdentityService identityService) : ICommandHandler<LoginUserCommand>
+    IIdentityService identityService) : ICommandHandler<LoginUserCommand, string>
 {
-    public async Task<Result> Handle(LoginUserCommand command, CancellationToken cancellationToken)
-    {
-        var result = await identityService.LoginUser(
-            command.Email, 
-            command.Password, 
+    public async Task<Result<string>> Handle(LoginUserCommand command, CancellationToken cancellationToken) =>
+        await identityService.LoginUser(
+            command.Email,
+            command.Password,
             command.RememberMe);
-        
-        return result;
-    }
 }

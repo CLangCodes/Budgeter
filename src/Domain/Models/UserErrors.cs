@@ -2,20 +2,16 @@ using SharedKernel;
 
 namespace Domain.Users;
 
-public sealed class User : Entity
-{
-    public Guid Id { get; set; }
-    public string Email { get; set; }
-    public bool EmailVerified { get; set; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public string PasswordHash { get; set; }
-}
 public static class UserErrors
 {
-    public static readonly Error LoginFailed = Error.NotFound(
+    public static readonly Error LoginFailed = Error.Unauthorized(
         "Users.LoginFailed",
-        "The login failed.");
+        "Invalid email or password.");
+
+    public static readonly Error LockedOut = Error.Unauthorized(
+        "Users.LockedOut",
+        "Account is temporarily locked. Try again later.");
+
     public static Error NotFound(Guid userId) => Error.NotFound(
         "Users.NotFound",
         $"The user with the Id = '{userId}' was not found");

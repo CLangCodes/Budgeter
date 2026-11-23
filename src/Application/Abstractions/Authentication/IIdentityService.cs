@@ -8,7 +8,7 @@ public interface IIdentityService
         string email, 
         string password, 
         bool enableNotifications);
-    public Task<Result> LoginUser(
+    public Task<Result<string>> LoginUser(
         string email,
         string password,
         bool rememberMe
