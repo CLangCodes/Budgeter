@@ -8,7 +8,7 @@ namespace BudgetBuddy.Endpoints.Users;
 
 internal sealed class Register : IEndpoint
 {
-    public sealed record Request(string Email, string FirstName, string LastName, string Password);
+    public sealed record Request(string Email, string Password, bool EnableNotifications);
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
@@ -19,9 +19,8 @@ internal sealed class Register : IEndpoint
         {
             var command = new RegisterUserCommand(
                 request.Email,
-                request.FirstName,
-                request.LastName,
-                request.Password);
+                request.Password,
+                request.EnableNotifications);
 
             Result<Guid> result = await handler.Handle(command, cancellationToken);
 

@@ -4,6 +4,7 @@ using Application.Abstractions.Data;
 using Infrastructure.Authentication;
 using Infrastructure.Authorization;
 using Infrastructure.Data;
+using Infrastructure.Identity;
 using Infrastructure.Time;
 using Infrastructure.Users.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -64,6 +65,11 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
+            .AddEntityFrameworkStores<BBDbContext>();
+            
+        services.AddScoped<IIdentityService, IdentityService>();
+            
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(o =>
             {

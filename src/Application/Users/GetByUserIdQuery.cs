@@ -18,22 +18,23 @@ internal sealed class GetUserByIdQueryHandler(IApplicationDbContext context, IUs
         //     return Result.Failure<UserResponse>(UserErrors.Unauthorized());
         // }
 
-        UserResponse? user = await context.Users
-            .Where(u => u.Id == query.UserId)
-            .Select(u => new UserResponse
-            {
-                Id = u.Id,
-                FirstName = u.FirstName,
-                LastName = u.LastName,
-                Email = u.Email
-            })
-            .SingleOrDefaultAsync(cancellationToken);
+        // UserResponse? user = await context.Users
+        //     .Where(u => u.Id == query.UserId)
+        //     .Select(u => new UserResponse
+        //     {
+        //         Id = u.Id,
+        //         FirstName = u.FirstName,
+        //         LastName = u.LastName,
+        //         Email = u.Email
+        //     })
+        //     .SingleOrDefaultAsync(cancellationToken);
 
-        if (user is null)
-        {
-            return Result.Failure<UserResponse>(UserErrors.NotFound(query.UserId));
-        }
-
-        return user;
+        // if (user is null)
+        // {
+        //     return Result.Failure<UserResponse>(UserErrors.NotFound(query.UserId));
+        // }
+        
+        // return user;
+        throw new NotImplementedException();
     }
 }

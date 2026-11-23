@@ -1,40 +1,33 @@
 using Application.Abstractions.Authentication;
-using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using Domain.Users;
-using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
 namespace Application.Users.Register;
 
-public sealed record RegisterUserCommand(string Email, string FirstName, string LastName, string Password)
+public sealed record RegisterUserCommand(
+    string Email, 
+    string Password, 
+    bool EnableNotifications)
     : ICommand<Guid>;
 
-internal sealed class RegisterUserCommandHandler(IApplicationDbContext context, IPasswordHasher passwordHasher)
+internal sealed class RegisterUserCommandHandler(
+    IIdentityService identityService)
     : ICommandHandler<RegisterUserCommand, Guid>
 {
-    public async Task<Result<Guid>> Handle(RegisterUserCommand command, CancellationToken cancellationToken)
+    public async Task<Result<Guid>> Handle(
+        RegisterUserCommand command, 
+        CancellationToken cancellationToken)
     {
-        if (await context.Users.AnyAsync(u => u.Email == command.Email, cancellationToken))
-        {
-            return Result.Failure<Guid>(UserErrors.EmailNotUnique);
-        }
+        var result = await identityService.RegisterUser(
+            command.Email, 
+            command.Password, 
+            command.EnableNotifications,
+            cancellationToken);
 
-        var user = new User
-        {
-            Id = Guid.NewGuid(),
-            Email = command.Email,
-            FirstName = command.FirstName,
-            LastName = command.LastName,
-            PasswordHash = passwordHasher.Hash(command.Password)
-        };
-
-        // user.Raise(new UserRegisteredDomainEvent(user.Id));
-
-        context.Users.Add(user);
-
-        await context.SaveChangesAsync(cancellationToken);
-
-        return user.Id;
+        
+        if (!result.IsSuccess)
+        { return Result.Failure<Guid>(UserErrors.RegistrationFailed); }
+        return result.Value;
     }
 }

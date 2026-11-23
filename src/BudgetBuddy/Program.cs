@@ -5,6 +5,9 @@ using BudgetBuddy.Extensions;
 using Scalar.AspNetCore;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using HealthChecks.UI.Client;
+using Infrastructure.Data;
+using Microsoft.AspNetCore.Identity;
+using Infrastructure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services
@@ -33,6 +36,18 @@ if (app.Environment.IsDevelopment())
     {
         options.WithTheme(ScalarTheme.Mars);
     });
+
+    using var scope = app.Services.CreateScope();
+
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+    if (!await roleManager.RoleExistsAsync(Roles.Admin))
+    {
+        await roleManager.CreateAsync(new IdentityRole<Guid>(Roles.Admin));
+    }
+    if (!await roleManager.RoleExistsAsync(Roles.Member))
+    {
+        await roleManager.CreateAsync(new IdentityRole<Guid>(Roles.Member));
+    }
 }
 app.UseAuthentication();
 app.UseAuthorization();
