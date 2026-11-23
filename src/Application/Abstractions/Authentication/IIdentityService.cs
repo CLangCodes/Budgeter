@@ -7,6 +7,10 @@ public interface IIdentityService
     public Task<Result<Guid>> RegisterUser(
         string email, 
         string password, 
-        bool enableNotifications,
-        CancellationToken cancellationToken);
+        bool enableNotifications);
+    public Task<Result> LoginUser(
+        string email,
+        string password,
+        bool rememberMe
+    );
 }

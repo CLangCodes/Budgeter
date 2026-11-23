@@ -22,8 +22,7 @@ internal sealed class RegisterUserCommandHandler(
         var result = await identityService.RegisterUser(
             command.Email, 
             command.Password, 
-            command.EnableNotifications,
-            cancellationToken);
+            command.EnableNotifications);
 
         
         if (!result.IsSuccess)

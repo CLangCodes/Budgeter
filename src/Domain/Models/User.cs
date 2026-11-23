@@ -13,6 +13,9 @@ public sealed class User : Entity
 }
 public static class UserErrors
 {
+    public static readonly Error LoginFailed = Error.NotFound(
+        "Users.LoginFailed",
+        "The login failed.");
     public static Error NotFound(Guid userId) => Error.NotFound(
         "Users.NotFound",
         $"The user with the Id = '{userId}' was not found");
@@ -32,4 +35,8 @@ public static class UserErrors
     public static Error RegistrationFailed => Error.Failure(
         "Users.RegistrationFailed",
         "The registration of the user failed");
+
+    public static Error RoleAssignmentFailed => Error.Failure(
+        "Users.RoleAssignmentFailed",
+        "The user's role assignment failed");
 }
