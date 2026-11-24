@@ -6,6 +6,7 @@ using Infrastructure.Data;
 using Infrastructure.Identity;
 using Infrastructure.Time;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
 namespace Infrastructure.Authentication;
@@ -14,8 +15,7 @@ internal sealed class IdentityService(
     IDateTimeProvider dateTimeProvider,
     UserManager<ApplicationUser> userManager,
     SignInManager<ApplicationUser> signInManager,
-    TokenProvider tokenProvider,
-    PermissionProvider permissionProvider) : IIdentityService
+    TokenProvider tokenProvider) : IIdentityService
 {
     public async Task<Result<TokenResponse>> LoginUser(
         string email,
@@ -23,7 +23,15 @@ internal sealed class IdentityService(
         bool rememberMe)
     {
         // rememberMe is intentionally unused until refresh tokens are implemented.
-        var user = await userManager.FindByEmailAsync(email);
+        var normalizedEmail = userManager.NormalizeEmail(email);
+
+        var user = await userManager.Users
+            .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                    .ThenInclude(r => r.Claims)
+            .AsSplitQuery()
+            .FirstOrDefaultAsync(u => u.NormalizedEmail == normalizedEmail);
+
         if (user is null)
             return Result.Failure<TokenResponse>(UserErrors.LoginFailed);
 
@@ -34,11 +42,7 @@ internal sealed class IdentityService(
         if (!check.Succeeded)
             return Result.Failure<TokenResponse>(UserErrors.LoginFailed);
 
-        var roles = await userManager.GetRolesAsync(user);
-
-        var permissions = await permissionProvider.GetForUserIdAsync(user.Id);
-
-        var accessToken = tokenProvider.Create(user, roles, permissions);
+        var accessToken = await tokenProvider.Create(user);
 
         var refreshToken = new RefreshToken
         {
@@ -78,7 +82,7 @@ internal sealed class IdentityService(
                 : UserErrors.RegistrationFailed);
         }
 
-        var roleAssignResult = await userManager.AddToRoleAsync(user, Roles.Member);
+        var roleAssignResult = await userManager.AddToRoleAsync(user, RoleTypes.Member);
         return roleAssignResult.Succeeded ?
             user.Id :
             Result.Failure<Guid>(UserErrors.RoleAssignmentFailed);
@@ -136,4 +140,21 @@ internal sealed class IdentityService(
         };
     }
 
+    public async Task<Result<TokenResponse>> RefreshToken(string RefreshToken)
+    {
+        RefreshToken? refreshToken = await context.RefreshTokens
+            .Include(r => r.User)
+                .ThenInclude(u => u.UserRoles)
+                    .ThenInclude(ur => ur.Role)
+                        .ThenInclude(r => r.Claims)
+            .FirstOrDefaultAsync(r => r.Token == RefreshToken);
+
+        if (refreshToken is null
+            || refreshToken.ExpiresOnUtc < dateTimeProvider.UtcNow)
+            return Result.Failure<TokenResponse>(UserErrors.LoginFailed);
+        
+        string accessToken = await tokenProvider.Create(refreshToken.User);
+        
+        throw new NotImplementedException();
+    }
 }

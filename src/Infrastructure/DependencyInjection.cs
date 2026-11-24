@@ -71,7 +71,7 @@ public static class DependencyInjection
                 o.Lockout.MaxFailedAccessAttempts = 5;
                 o.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
             })
-            .AddRoles<IdentityRole<Guid>>()
+            .AddRoles<ApplicationRole>()
             .AddSignInManager()
             .AddEntityFrameworkStores<BBDbContext>()
             .AddDefaultTokenProviders();

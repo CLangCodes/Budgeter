@@ -8,6 +8,10 @@ public static class UserErrors
         "Users.LoginFailed",
         "Invalid email or password.");
 
+    public static readonly Error RefreshTokenExpired = Error.Problem(
+        "Users.RefreshTokenExpired",
+        "The Refresh Token has Expired.");
+
     public static readonly Error LockedOut = Error.Unauthorized(
         "Users.LockedOut",
         "Account is temporarily locked. Try again later.");

@@ -14,6 +14,9 @@ public interface IIdentityService
         string password,
         bool rememberMe
     );
+    public Task<Result<TokenResponse>> RefreshToken(
+        string RefreshToken
+    );
     public Task<Result<UserResponse>> GetUserByEmail(
         string email
     );

@@ -5,4 +5,5 @@ namespace Infrastructure.Identity;
 public sealed class ApplicationUser : IdentityUser<Guid>
 {
     public bool EnableNotifications { get; set; }
+    public ICollection<ApplicationUserRole> UserRoles { get; set; } = [];
 }

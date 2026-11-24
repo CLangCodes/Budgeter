@@ -9,7 +9,16 @@ using Infrastructure.Authentication;
 namespace Infrastructure.Data;
 
 public class BBDbContext(DbContextOptions<BBDbContext> options) 
-    : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>(options), IApplicationDbContext
+    : IdentityDbContext<
+          ApplicationUser, 
+          ApplicationRole, 
+          Guid,
+          IdentityUserClaim<Guid>,
+          ApplicationUserRole,
+          IdentityUserLogin<Guid>,
+          IdentityRoleClaim<Guid>,
+          IdentityUserToken<Guid>>(options), 
+        IApplicationDbContext
 {
     public DbSet<Account> Accounts => Set<Account>();
     public DbSet<BudgetItem> BudgetItems => Set<BudgetItem>();

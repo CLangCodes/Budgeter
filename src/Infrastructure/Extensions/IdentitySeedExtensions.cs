@@ -27,8 +27,8 @@ public static class IdentitySeedExtensions
 
     private static readonly Dictionary<string, string[]> RolePermissions = new()
     {
-        [Roles.Member] = MemberPermissions,
-        [Roles.Admin] = [.. MemberPermissions, Permissions.UsersDelete],
+        [RoleTypes.Member] = MemberPermissions,
+        [RoleTypes.Admin] = [.. MemberPermissions, Permissions.UsersDelete],
     };
 
     /// <summary>
@@ -40,14 +40,17 @@ public static class IdentitySeedExtensions
     {
         using IServiceScope scope = app.ApplicationServices.CreateScope();
 
-        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
 
         foreach (var (roleName, permissions) in RolePermissions)
         {
             var role = await roleManager.FindByNameAsync(roleName);
             if (role is null)
             {
-                role = new IdentityRole<Guid>(roleName);
+                role = new ApplicationRole()
+                {
+                    Name = roleName
+                };
                 await roleManager.CreateAsync(role);
             }
 

@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Infrastructure.Authorization;
 using Infrastructure.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -12,10 +13,8 @@ namespace Infrastructure.Authentication;
 internal sealed class TokenProvider(
     IConfiguration configuration)
 {
-    public string Create(
-        ApplicationUser user,
-        IEnumerable<string> roles,
-        IEnumerable<string> permissions)
+    public async Task<string> Create(
+        ApplicationUser user)
     {
         string secretKey = configuration["Jwt:Secret"]
             ?? throw new InvalidOperationException(
@@ -27,7 +26,16 @@ internal sealed class TokenProvider(
         var credentials = new SigningCredentials(
             securityKey, 
             SecurityAlgorithms.HmacSha256);
+        IEnumerable<string> roles = [.. user.UserRoles
+            .Select(ur => ur.Role)
+                .Select(r => r.Name ?? string.Empty)];
 
+        IEnumerable<string> permissions = [.. user.UserRoles
+            .Select(ur => ur.Role)
+                .SelectMany(r => r.Claims.Where(
+                        c => c.ClaimType == CustomClaimTypes.Permission))
+                    .Select(c => c.ClaimValue ?? string.Empty)];
+        
         List<Claim> claims =
         [
             new(JwtRegisteredClaimNames.Sub,
