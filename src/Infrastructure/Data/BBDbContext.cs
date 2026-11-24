@@ -4,16 +4,18 @@ using Application.Abstractions.Data;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Infrastructure.Identity;
+using Infrastructure.Authentication;
 
 namespace Infrastructure.Data;
 
 public class BBDbContext(DbContextOptions<BBDbContext> options) 
     : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>(options), IApplicationDbContext
 {
-    public DbSet<Transaction> Transactions => Set<Transaction>();
-    public DbSet<Category> Categories => Set<Category>();
-    public DbSet<BudgetItem> BudgetItems => Set<BudgetItem>();
     public DbSet<Account> Accounts => Set<Account>();
+    public DbSet<BudgetItem> BudgetItems => Set<BudgetItem>();
+    public DbSet<Category> Categories => Set<Category>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<Transaction> Transactions => Set<Transaction>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
