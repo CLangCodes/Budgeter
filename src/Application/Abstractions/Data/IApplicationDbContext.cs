@@ -5,10 +5,10 @@ namespace Application.Abstractions.Data;
 
 public interface IApplicationDbContext
 {
-    DbSet<Transaction> Transactions { get; }
-    DbSet<Category> Categories { get; }
-    DbSet<BudgetItem> BudgetItems { get; }
     DbSet<Account> Accounts { get; }
+    DbSet<BudgetItem> BudgetItems { get; }
+    DbSet<Category> Categories { get; }
+    DbSet<Transaction> Transactions { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

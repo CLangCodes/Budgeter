@@ -161,4 +161,13 @@ internal sealed class IdentityService(
         await context.SaveChangesAsync();
         return new TokenResponse(accessToken, refreshToken.Token);
     }
+
+    public async Task<Result> RevokeRefreshTokens(Guid userId)
+    {
+        await context.RefreshTokens
+            .Where(r => r.UserId == userId)
+            .ExecuteDeleteAsync();
+
+        return Result.Success();
+    }
 }

@@ -28,4 +28,5 @@ public interface IIdentityService
         string PhoneNumber, 
         bool EnableNotifications
     );
+    public Task<Result> RevokeRefreshTokens(Guid userId);
 }
