@@ -1,5 +1,7 @@
 using Application.Abstractions.Authentication;
+using Application.Users.GetById;
 using Domain.Users;
+using Infrastructure.Authorization;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using SharedKernel;
@@ -9,7 +11,8 @@ namespace Infrastructure.Authentication;
 internal sealed class IdentityService(
     UserManager<ApplicationUser> userManager,
     SignInManager<ApplicationUser> signInManager,
-    TokenProvider tokenProvider) : IIdentityService
+    TokenProvider tokenProvider,
+    PermissionProvider permissionProvider) : IIdentityService
 {
     public async Task<Result<string>> LoginUser(
         string email,
@@ -29,7 +32,8 @@ internal sealed class IdentityService(
             return Result.Failure<string>(UserErrors.LoginFailed);
 
         var roles = await userManager.GetRolesAsync(user);
-        return tokenProvider.Create(user, roles);
+        var permissions = await permissionProvider.GetForUserIdAsync(user.Id);
+        return tokenProvider.Create(user, roles, permissions);
     }
 
     public async Task<Result<Guid>> RegisterUser(
@@ -51,5 +55,30 @@ internal sealed class IdentityService(
         return roleAssignResult.Succeeded ?
             user.Id :
             Result.Failure<Guid>(UserErrors.RoleAssignmentFailed);
+    }
+
+    public async Task<Result<UserResponse>> GetUserByEmail(string email)
+    {
+        var user = await userManager.FindByEmailAsync(email);
+        return user is not null
+            ? new UserResponse()
+            {
+                Id = user.Id,
+                Email = user.Email!
+            }
+            : Result.Failure<UserResponse>(UserErrors.NotFoundByEmail);
+        
+    }
+    
+    public async Task<Result<UserResponse>> GetUserById(string userId)
+    {
+        var user = await userManager.FindByIdAsync(userId);
+        return user is not null
+            ? new UserResponse()
+            {
+                Id = user.Id,
+                Email = user.Email!
+            }
+            : Result.Failure<UserResponse>(UserErrors.NotFoundById);
     }
 }

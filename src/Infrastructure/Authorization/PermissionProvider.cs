@@ -1,12 +1,23 @@
-﻿namespace Infrastructure.Authorization;
+﻿using Infrastructure.Authentication;
+using Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
-internal sealed class PermissionProvider
+namespace Infrastructure.Authorization;
+
+internal sealed class PermissionProvider(BBDbContext context)
 {
-    public Task<HashSet<string>> GetForUserIdAsync(Guid userId)
+    public async Task<HashSet<string>> GetForUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        // TODO: Here you'll implement your logic to fetch permissions.
-        HashSet<string> permissionsSet = [];
+        var permissions = await (
+            from userRole in context.UserRoles
+            join claim in context.RoleClaims on userRole.RoleId equals claim.RoleId
+            where userRole.UserId == userId &&
+                claim.ClaimType == CustomClaimTypes.Permission &&
+                claim.ClaimValue != null
+            select claim.ClaimValue!)
+            .Distinct()
+            .ToListAsync(cancellationToken);
 
-        return Task.FromResult(permissionsSet);
+        return [.. permissions];
     }
 }

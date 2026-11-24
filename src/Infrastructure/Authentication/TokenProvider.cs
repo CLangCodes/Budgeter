@@ -9,7 +9,7 @@ namespace Infrastructure.Authentication;
 
 internal sealed class TokenProvider(IConfiguration configuration)
 {
-    public string Create(ApplicationUser user, IEnumerable<string> roles)
+    public string Create(ApplicationUser user, IEnumerable<string> roles, IEnumerable<string> permissions)
     {
         string secretKey = configuration["Jwt:Secret"]
             ?? throw new InvalidOperationException("JWT secret is not configured.");
@@ -22,9 +22,10 @@ internal sealed class TokenProvider(IConfiguration configuration)
         [
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
-            new("email_verified", user.EmailConfirmed.ToString().ToLowerInvariant())
+            new("email_verified", user.EmailConfirmed.ToString().ToLowerInvariant()),
+            ..roles.Select(role => new Claim(ClaimTypes.Role, role)),
+            ..permissions.Select(permission => new Claim(CustomClaimTypes.Permission, permission))
         ];
-        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {

@@ -8,33 +8,19 @@ using SharedKernel;
 namespace Application.Users.GetById;
 public sealed record GetUserByIdQuery(Guid UserId) : IQuery<UserResponse>;
 
-internal sealed class GetUserByIdQueryHandler(IApplicationDbContext context, IUserContext userContext)
+internal sealed class GetUserByIdQueryHandler(
+    IIdentityService identityService)
     : IQueryHandler<GetUserByIdQuery, UserResponse>
 {
     public async Task<Result<UserResponse>> Handle(GetUserByIdQuery query, CancellationToken cancellationToken)
     {
-        // if (query.UserId != userContext.UserId)
-        // {
-        //     return Result.Failure<UserResponse>(UserErrors.Unauthorized());
-        // }
+        var user = await identityService.GetUserById(query.UserId.ToString());
 
-        // UserResponse? user = await context.Users
-        //     .Where(u => u.Id == query.UserId)
-        //     .Select(u => new UserResponse
-        //     {
-        //         Id = u.Id,
-        //         FirstName = u.FirstName,
-        //         LastName = u.LastName,
-        //         Email = u.Email
-        //     })
-        //     .SingleOrDefaultAsync(cancellationToken);
-
-        // if (user is null)
-        // {
-        //     return Result.Failure<UserResponse>(UserErrors.NotFound(query.UserId));
-        // }
+        if (user is null)
+        {
+            return Result.Failure<UserResponse>(UserErrors.NotFoundById);
+        }
         
-        // return user;
-        throw new NotImplementedException();
+        return user;
     }
 }

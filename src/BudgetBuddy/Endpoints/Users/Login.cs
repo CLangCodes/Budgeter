@@ -12,6 +12,8 @@ internal sealed class Login : IEndpoint
         string Email, 
         string Password, 
         bool RememberMe = false);
+    public sealed record Response(
+        string AccessToken);
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
@@ -25,12 +27,12 @@ internal sealed class Login : IEndpoint
                 request.Password,
                 request.RememberMe);
 
-            Result<string> result = await handler.Handle(command, cancellationToken);
+            var result = await handler.Handle(command, cancellationToken);
 
-            return result.Match(Results.Ok, CustomResults.Problem);
+            return result.Match(token => Results.Ok(new Response(token)), CustomResults.Problem);
         })
         .AllowAnonymous()
-        .Produces<string>(StatusCodes.Status200OK)
+        .Produces<Response>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status401Unauthorized)
         .WithTags(Tags.Users);
     }

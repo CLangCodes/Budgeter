@@ -3,6 +3,8 @@ using Application.Users.GetById;
 using SharedKernel;
 using BudgetBuddy.Extensions;
 using BudgetBuddy.Infrastructure;
+using Infrastructure.Identity;
+using Domain.Users;
 
 namespace BudgetBuddy.Endpoints.Users;
 
@@ -10,7 +12,7 @@ internal sealed class GetById : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapGet("users/{userId}", async (
+        app.MapGet("users/{userId:guid}", async (
             Guid userId,
             IQueryHandler<GetUserByIdQuery, UserResponse> handler,
             CancellationToken cancellationToken) =>
@@ -21,7 +23,10 @@ internal sealed class GetById : IEndpoint
 
             return result.Match(Results.Ok, CustomResults.Problem);
         })
-        .HasPermission(Permissions.UsersAccess)
+        // .RequireAuthorization(policy => policy.RequireRole(Roles.Member))
+        .HasPermission(Permissions.UsersRead)
+        .Produces<UserResponse>(StatusCodes.Status200OK)
+        .ProducesProblem(StatusCodes.Status401Unauthorized)
         .WithTags(Tags.Users);
     }
 }

@@ -23,6 +23,7 @@ builder.Services
 var app = builder.Build();
 app.MapEndpoints();
 app.ApplyMigrations();
+await app.SeedIdentityRoles();
 
 app.MapHealthChecks("/health", new HealthCheckOptions{
     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
@@ -36,18 +37,6 @@ if (app.Environment.IsDevelopment())
     {
         options.WithTheme(ScalarTheme.Mars);
     });
-
-    using var scope = app.Services.CreateScope();
-
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
-    if (!await roleManager.RoleExistsAsync(Roles.Admin))
-    {
-        await roleManager.CreateAsync(new IdentityRole<Guid>(Roles.Admin));
-    }
-    if (!await roleManager.RoleExistsAsync(Roles.Member))
-    {
-        await roleManager.CreateAsync(new IdentityRole<Guid>(Roles.Member));
-    }
 }
 app.UseAuthentication();
 app.UseAuthorization();
