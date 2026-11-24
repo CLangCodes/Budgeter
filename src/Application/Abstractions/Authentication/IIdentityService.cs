@@ -20,4 +20,9 @@ public interface IIdentityService
     public Task<Result<UserResponse>> GetUserById(
         string userId
     );
+    public Task<Result<UserResponse>> UpdateUser(
+        string UserId, 
+        string PhoneNumber, 
+        bool EnableNotifications
+    );
 }
