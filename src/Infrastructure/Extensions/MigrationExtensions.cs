@@ -1,7 +1,9 @@
 ﻿using Infrastructure.Data;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace BudgetBuddy.Extensions;
+namespace Infrastructure.Extensions;
 
 public static class MigrationExtensions
 {

@@ -6,6 +6,7 @@ using Scalar.AspNetCore;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using HealthChecks.UI.Client;
 using Infrastructure.Data;
+using Infrastructure.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Infrastructure.Identity;
 

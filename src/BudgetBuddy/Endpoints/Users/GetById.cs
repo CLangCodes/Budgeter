@@ -3,8 +3,6 @@ using Application.Users.GetById;
 using SharedKernel;
 using BudgetBuddy.Extensions;
 using BudgetBuddy.Infrastructure;
-using Infrastructure.Identity;
-using Domain.Users;
 
 namespace BudgetBuddy.Endpoints.Users;
 
@@ -23,7 +21,6 @@ internal sealed class GetById : IEndpoint
 
             return result.Match(Results.Ok, CustomResults.Problem);
         })
-        // .RequireAuthorization(policy => policy.RequireRole(Roles.Member))
         .HasPermission(Permissions.UsersRead)
         .Produces<UserResponse>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status401Unauthorized)

@@ -3,8 +3,6 @@ using Application.Users.GetById;
 using SharedKernel;
 using BudgetBuddy.Extensions;
 using BudgetBuddy.Infrastructure;
-using Infrastructure.Identity;
-using Domain.Users;
 using Application.Users.Login;
 using Microsoft.AspNetCore.Mvc;
 
