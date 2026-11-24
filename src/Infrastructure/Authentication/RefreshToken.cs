@@ -1,8 +1,10 @@
+using System.ComponentModel.DataAnnotations;
 using Infrastructure.Identity;
+using SharedKernel;
 
 namespace Infrastructure.Authentication;
 
-public class RefreshToken
+public class RefreshToken : Entity
 {
     public Guid Id { get; set; }
     public string Token { get; set; }

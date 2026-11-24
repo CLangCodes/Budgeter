@@ -63,11 +63,6 @@ internal sealed class TokenProvider(
         return tokenHandler.CreateToken(tokenDescriptor);
     }
 
-    public string GenerateRefreshToken(
-        IDateTimeProvider dateTimeProvider,
-        ApplicationUser user,
-        string refreshToken)
-        {
-            return Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
-        }
+    public string GenerateRefreshToken()
+        => Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
     }

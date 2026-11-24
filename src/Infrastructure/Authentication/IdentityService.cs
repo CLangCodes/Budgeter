@@ -2,19 +2,22 @@ using Application.Abstractions.Authentication;
 using Application.Users;
 using Domain.Users;
 using Infrastructure.Authorization;
+using Infrastructure.Data;
 using Infrastructure.Identity;
+using Infrastructure.Time;
 using Microsoft.AspNetCore.Identity;
 using SharedKernel;
 
 namespace Infrastructure.Authentication;
-
 internal sealed class IdentityService(
+    BBDbContext context,
+    IDateTimeProvider dateTimeProvider,
     UserManager<ApplicationUser> userManager,
     SignInManager<ApplicationUser> signInManager,
     TokenProvider tokenProvider,
     PermissionProvider permissionProvider) : IIdentityService
 {
-    public async Task<Result<string>> LoginUser(
+    public async Task<Result<TokenResponse>> LoginUser(
         string email,
         string password,
         bool rememberMe)
@@ -22,18 +25,34 @@ internal sealed class IdentityService(
         // rememberMe is intentionally unused until refresh tokens are implemented.
         var user = await userManager.FindByEmailAsync(email);
         if (user is null)
-            return Result.Failure<string>(UserErrors.LoginFailed);
+            return Result.Failure<TokenResponse>(UserErrors.LoginFailed);
 
         // Verifies the password and tracks lockout without issuing a cookie.
         var check = await signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: true);
         if (check.IsLockedOut)
-            return Result.Failure<string>(UserErrors.LockedOut);
+            return Result.Failure<TokenResponse>(UserErrors.LockedOut);
         if (!check.Succeeded)
-            return Result.Failure<string>(UserErrors.LoginFailed);
+            return Result.Failure<TokenResponse>(UserErrors.LoginFailed);
 
         var roles = await userManager.GetRolesAsync(user);
+
         var permissions = await permissionProvider.GetForUserIdAsync(user.Id);
-        return tokenProvider.Create(user, roles, permissions);
+
+        var accessToken = tokenProvider.Create(user, roles, permissions);
+
+        var refreshToken = new RefreshToken
+        {
+            Id = Guid.NewGuid(),
+            UserId = user.Id,
+            Token = tokenProvider.GenerateRefreshToken(),
+            ExpiresOnUtc = dateTimeProvider.UtcNow.AddDays(1) // ToDo: Configure this in ApplicationSettings
+        };
+        
+        context.RefreshTokens.Add(refreshToken);
+        
+        await context.SaveChangesAsync();
+
+        return new TokenResponse(accessToken, refreshToken.Token);
     }
 
     public async Task<Result<Guid>> RegisterUser(

@@ -3,6 +3,7 @@ using Application.Users.Login;
 using SharedKernel;
 using BudgetBuddy.Extensions;
 using BudgetBuddy.Http;
+using Application.Abstractions.Authentication;
 
 namespace BudgetBuddy.Endpoints.Users;
 
@@ -13,13 +14,13 @@ internal sealed class Login : IEndpoint
         string Password, 
         bool RememberMe = false);
     public sealed record Response(
-        string AccessToken);
+        TokenResponse TokenResponse);
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
         app.MapPost("users/login", async (
             Request request,
-            ICommandHandler<LoginUserCommand, string> handler,
+            ICommandHandler<LoginUserCommand, TokenResponse> handler,
             CancellationToken cancellationToken) =>
         {
             var command = new LoginUserCommand(
