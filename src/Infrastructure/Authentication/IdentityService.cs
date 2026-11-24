@@ -77,8 +77,31 @@ internal sealed class IdentityService(
             ? new UserResponse()
             {
                 Id = user.Id,
-                Email = user.Email!
+                Email = user.Email!,
+                PhoneNumber = user.PhoneNumber ?? string.Empty,
+                EnableNotifications = user.EnableNotifications
             }
             : Result.Failure<UserResponse>(UserErrors.NotFoundById);
     }
+
+    public async Task<Result<UserResponse>> UpdateUser(
+        string userId, 
+        string phoneNumber, 
+        bool enableNotifications)
+    {
+        var user = await userManager.FindByIdAsync(userId);
+        if (user is null)
+            return Result.Failure<UserResponse>(UserErrors.NotFoundById);
+
+        if (user.PhoneNumber != phoneNumber)
+            await userManager.SetPhoneNumberAsync(user, phoneNumber);
+
+        return new UserResponse()
+        {
+            Id = user.Id,
+            PhoneNumber = phoneNumber,
+            EnableNotifications = enableNotifications
+        };
+    }
+
 }
