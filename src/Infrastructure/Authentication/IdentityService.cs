@@ -140,7 +140,7 @@ internal sealed class IdentityService(
         };
     }
 
-    public async Task<Result<TokenResponse>> RefreshToken(string RefreshToken)
+    public async Task<Result<TokenResponse>> LoginWithRefreshTokenCommand(string RefreshToken)
     {
         RefreshToken? refreshToken = await context.RefreshTokens
             .Include(r => r.User)
@@ -154,7 +154,11 @@ internal sealed class IdentityService(
             return Result.Failure<TokenResponse>(UserErrors.LoginFailed);
         
         string accessToken = await tokenProvider.Create(refreshToken.User);
-        
-        throw new NotImplementedException();
+
+        refreshToken.Token = tokenProvider.GenerateRefreshToken();
+        refreshToken.ExpiresOnUtc = dateTimeProvider.UtcNow.AddDays(1); // ToDo: Configure in AppSettings
+
+        await context.SaveChangesAsync();
+        return new TokenResponse(accessToken, refreshToken.Token);
     }
 }
