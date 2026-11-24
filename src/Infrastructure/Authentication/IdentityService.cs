@@ -160,7 +160,7 @@ internal sealed class IdentityService(
 
         if (refreshToken is null
             || refreshToken.ExpiresOnUtc < dateTimeProvider.UtcNow)
-            return Result.Failure<TokenResponse>(UserErrors.LoginFailed);
+            return Result.Failure<TokenResponse>(UserErrors.RefreshTokenExpired);
         
         string accessToken = await tokenProvider.Create(refreshToken.User);
 
