@@ -1193,7 +1193,8 @@ namespace Infrastructure.Data.Migrations
                     b.HasIndex("Token")
                         .IsUnique();
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("RefreshTokens", "public");
                 });

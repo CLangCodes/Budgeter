@@ -17,6 +17,9 @@ internal sealed class RefreshTokenConfiguration
 
         builder.HasIndex(r => r.Token)
             .IsUnique();
+            
+        builder.HasIndex(r => r.UserId)
+            .IsUnique();
 
         builder.HasOne(r => r.User)
             .WithMany()

@@ -44,15 +44,24 @@ internal sealed class IdentityService(
 
         var accessToken = await tokenProvider.Create(user);
 
-        var refreshToken = new RefreshToken
+        var refreshToken = await context.RefreshTokens
+            .FirstOrDefaultAsync(r => r.UserId == user.Id);
+        if (refreshToken is not null)
         {
-            Id = Guid.NewGuid(),
-            UserId = user.Id,
-            Token = tokenProvider.GenerateRefreshToken(),
-            ExpiresOnUtc = dateTimeProvider.UtcNow.AddDays(1) // ToDo: Configure this in ApplicationSettings
-        };
+            refreshToken.Token = tokenProvider.GenerateRefreshToken();
+            refreshToken.ExpiresOnUtc = dateTimeProvider.UtcNow.AddDays(1);
+        } else
+        {
+            refreshToken = new RefreshToken
+            {
+                Id = Guid.NewGuid(),
+                UserId = user.Id,
+                Token = tokenProvider.GenerateRefreshToken(),
+                ExpiresOnUtc = dateTimeProvider.UtcNow.AddDays(1) // ToDo: Configure this in ApplicationSettings
+            };
         
         context.RefreshTokens.Add(refreshToken);
+        }
         
         await context.SaveChangesAsync();
 
