@@ -1,7 +1,6 @@
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Application.Abstractions.Data;
-using Domain.Users;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Infrastructure.Identity;
@@ -11,16 +10,11 @@ namespace Infrastructure.Data;
 public class BBDbContext(DbContextOptions<BBDbContext> options) 
     : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>(options), IApplicationDbContext
 {
-    // public DbSet<User> Users => Set<User>();
     public DbSet<Transaction> Transactions => Set<Transaction>();
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<BudgetItem> BudgetItems => Set<BudgetItem>();
     public DbSet<Account> Accounts => Set<Account>();
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        base.OnConfiguring(optionsBuilder);
-    }
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -40,10 +34,5 @@ public class BBDbContext(DbContextOptions<BBDbContext> options)
             if (type is not null)
                 entityType.SetSchema(Schemas.Identity);
         }
-
-        // builder.Entity<Transaction>(entity =>
-        // {
-        //     entity.HasKey(t => t.Id);
-        // });
     }
 }

@@ -1,6 +1,6 @@
 ﻿using SharedKernel;
 
-namespace BudgetBuddy.Infrastructure;
+namespace BudgetBuddy.Http;
 
 public static class CustomResults
 {

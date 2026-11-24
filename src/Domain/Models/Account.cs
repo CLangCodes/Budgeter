@@ -6,15 +6,15 @@ public enum AccountType { Cash, Checking, Savings }
 
 public class Account : Entity
 {
-    public Guid AccountId { get; set; }
-    public List<Transaction> Transactions { get; set; } = [];
-    public string NickName { get; set; } = string.Empty;
-    public AccountType AccountType { get; set; }
-    public decimal StartingBalance { get; set; }
-    public DateOnly CreatedAt { get; set; }
-    public DateOnly UpdatedAt { get; set; }
+    public Guid AccountId { get; private set; }
+    public List<Transaction> Transactions { get; private set; } = [];
+    public string NickName { get; private set; } = string.Empty;
+    public AccountType AccountType { get; private set; }
+    public decimal StartingBalance { get; private set; }
+    public DateOnly CreatedAt { get; private set; }
+    public DateOnly UpdatedAt { get; private set; }
     public decimal Balance => StartingBalance - Transactions.Sum(t => t.Amount);
-    public List<BudgetItem> BudgetItems { get; set; } = [];
+    public List<BudgetItem> BudgetItems { get; private set; } = [];
 
     public static Account Create(
         string nickName,

@@ -6,47 +6,20 @@ public enum RecurrenceUnit { Day, Week, Month, Year }
 
 public class BudgetItem : Entity
 {
-    public Guid BudgetItemId { get; set; }
-    public Guid CategoryId { get; set; }
-    public Category? Category { get; set; }
-    public Guid? AccountId { get; set; }
-    public string BudgetItemName { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
+    public Guid BudgetItemId { get; private set; }
+    public Guid CategoryId { get; private set; }
+    public Category? Category { get; private set; }
+    public Guid? AccountId { get; private set; }
+    public string BudgetItemName { get; private set; } = string.Empty;
+    public string Description { get; private set; } = string.Empty;
 
-    public RecurrenceUnit RecurrenceUnit { get; set; }   // Month
-    public int RecurrenceInterval { get; set; } = 1;     // every 1 month (2 = bi-monthly, 3 = quarterly)
-    public DateOnly StartTrackingDate { get; set; }      // anchor: first due date, e.g. 2026-11-15
-    public DateOnly? EndDate { get; set; }               // optional: loan payoff, cancelled subscription
-    public decimal Amount { get; set; } = 0.0m;          // Debit value; positive is a withdrawal, negative is a deposit (e.g. refund)
+    public RecurrenceUnit RecurrenceUnit { get; private set; }   // Month
+    public int RecurrenceInterval { get; private set; } = 1;     // every 1 month (2 = bi-monthly, 3 = quarterly)
+    public DateOnly StartTrackingDate { get; private set; }      // anchor: first due date, e.g. 2026-11-15
+    public DateOnly? EndDate { get; private set; }               // optional: loan payoff, cancelled subscription
+    public decimal Amount { get; private set; }                  // Debit value; positive is a withdrawal, negative is a deposit (e.g. refund)
 
-    public static BudgetItem Create(
-        Guid categoryId,
-        Guid? accountId,
-        string budgetItemName,
-        string description,
-        RecurrenceUnit recurrenceUnit,
-        int recurrenceInterval,
-        DateOnly startTrackingDate,
-        DateOnly? endDate,
-        decimal Amount
-    )
-        {
-            return new BudgetItem
-            {
-                BudgetItemId = Guid.NewGuid(),
-                CategoryId = categoryId,
-                AccountId = accountId,
-                BudgetItemName = budgetItemName,
-                Description = description,
-                RecurrenceUnit = recurrenceUnit,
-                RecurrenceInterval = recurrenceInterval,
-                StartTrackingDate = startTrackingDate,
-                EndDate = endDate,
-                Amount = Amount
-            };
-        }
-
-    public void Update(
+    public static Result<BudgetItem> Create(
         Guid categoryId,
         Guid? accountId,
         string budgetItemName,
@@ -57,6 +30,44 @@ public class BudgetItem : Entity
         DateOnly? endDate,
         decimal amount)
     {
+        Result recurrence = ValidateRecurrence(recurrenceInterval, startTrackingDate, endDate);
+        if (recurrence.IsFailure)
+        {
+            return Result.Failure<BudgetItem>(recurrence.Error);
+        }
+
+        return new BudgetItem
+        {
+            BudgetItemId = Guid.NewGuid(),
+            CategoryId = categoryId,
+            AccountId = accountId,
+            BudgetItemName = budgetItemName,
+            Description = description,
+            RecurrenceUnit = recurrenceUnit,
+            RecurrenceInterval = recurrenceInterval,
+            StartTrackingDate = startTrackingDate,
+            EndDate = endDate,
+            Amount = amount
+        };
+    }
+
+    public Result Update(
+        Guid categoryId,
+        Guid? accountId,
+        string budgetItemName,
+        string description,
+        RecurrenceUnit recurrenceUnit,
+        int recurrenceInterval,
+        DateOnly startTrackingDate,
+        DateOnly? endDate,
+        decimal amount)
+    {
+        Result recurrence = ValidateRecurrence(recurrenceInterval, startTrackingDate, endDate);
+        if (recurrence.IsFailure)
+        {
+            return recurrence;
+        }
+
         CategoryId = categoryId;
         AccountId = accountId;
         BudgetItemName = budgetItemName;
@@ -66,9 +77,10 @@ public class BudgetItem : Entity
         StartTrackingDate = startTrackingDate;
         EndDate = endDate;
         Amount = amount;
+        return Result.Success();
     }
 
-    public static Result ValidateRecurrence(int recurrenceInterval, DateOnly startTrackingDate, DateOnly? endDate)
+    private static Result ValidateRecurrence(int recurrenceInterval, DateOnly startTrackingDate, DateOnly? endDate)
     {
         if (recurrenceInterval < 1)
             {return Result.Failure(BudgetItemErrors.InvalidRecurrence("RecurrenceInterval must be at least 1."));}
@@ -94,6 +106,7 @@ public class BudgetItem : Entity
         }
     }
 }
+
 public static class BudgetItemErrors
 {
     public static Error NotFound(Guid budgetItemId) => Error.NotFound(

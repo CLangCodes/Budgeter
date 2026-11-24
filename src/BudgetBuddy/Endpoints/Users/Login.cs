@@ -2,7 +2,7 @@
 using Application.Users.Login;
 using SharedKernel;
 using BudgetBuddy.Extensions;
-using BudgetBuddy.Infrastructure;
+using BudgetBuddy.Http;
 
 namespace BudgetBuddy.Endpoints.Users;
 

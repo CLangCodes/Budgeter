@@ -2,7 +2,7 @@ using Application.Abstractions.Messaging;
 using Application.Users.Register;
 using SharedKernel;
 using BudgetBuddy.Extensions;
-using BudgetBuddy.Infrastructure;
+using BudgetBuddy.Http;
 
 namespace BudgetBuddy.Endpoints.Users;
 
@@ -26,6 +26,10 @@ internal sealed class Register : IEndpoint
 
             return result.Match(Results.Ok, CustomResults.Problem);
         })
+        .AllowAnonymous()
+        .Produces<Guid>(StatusCodes.Status200OK)
+        .ProducesProblem(StatusCodes.Status400BadRequest)
+        .ProducesProblem(StatusCodes.Status409Conflict)
         .WithTags(Tags.Users);
     }
 }

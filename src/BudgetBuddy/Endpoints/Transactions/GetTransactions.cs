@@ -1,5 +1,9 @@
-using Application.Transactions;
+using Application.Abstractions.Authorization;
 using Application.Abstractions.Messaging;
+using Application.Transactions;
+using BudgetBuddy.Extensions;
+using BudgetBuddy.Http;
+using SharedKernel;
 
 namespace BudgetBuddy.Endpoints.Transactions;
 
@@ -14,16 +18,15 @@ internal sealed class GetTransactionsEndpoint : IEndpoint
         IQueryHandler<GetTransactionsQuery, GetTransactionsResult> handler,
         CancellationToken cancellationToken) =>
         {
+            // TODO: move to the Application layer with the upcoming validation work.
             if (startDate > endDate)
                 return Results.BadRequest("startDate must be before endDate.");
 
-            var result = await handler.Handle(
-                new GetTransactionsQuery(accountId, startDate, endDate), cancellationToken);
-
-            return result.IsSuccess
-                ? Results.Ok(result.Value)
-                : Results.Problem("There was a problem retrieving Transactions.");
+            Result<GetTransactionsResult> result = await handler.Handle(
+                new GetTransactionsQuery(accountId, startDate, endDate), cancellationToken).ConfigureAwait(false);
+            return result.Match(Results.Ok, CustomResults.Problem);
         })
+        .HasPermission(Permissions.TransactionsRead)
         .WithTags(Tags.Transactions)
         .Produces<GetTransactionsResult>()
         .ProducesProblem(StatusCodes.Status400BadRequest);

@@ -93,7 +93,6 @@ public static class DependencyInjection
 
         services.AddHttpContextAccessor();
         services.AddScoped<IUserContext, UserContext>();
-        services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<TokenProvider>();
 
         return services;
@@ -101,7 +100,11 @@ public static class DependencyInjection
 
     private static IServiceCollection AddAuthorizationInternal(this IServiceCollection services)
     {
-        services.AddAuthorization();
+        // Every endpoint requires an authenticated user unless it opts out with AllowAnonymous().
+        services.AddAuthorizationBuilder()
+            .SetFallbackPolicy(new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build());
 
         services.AddScoped<PermissionProvider>();
 

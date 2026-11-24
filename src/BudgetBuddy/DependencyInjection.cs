@@ -1,7 +1,7 @@
 using System.Reflection;
 using System.Text.Json.Serialization;
 using BudgetBuddy.Extensions;
-using BudgetBuddy.Infrastructure;
+using BudgetBuddy.Http;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace BudgetBuddy;

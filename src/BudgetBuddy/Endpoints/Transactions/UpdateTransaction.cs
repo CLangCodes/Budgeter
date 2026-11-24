@@ -1,7 +1,9 @@
+using Domain.Models;
+using Application.Abstractions.Authorization;
 using Application.Abstractions.Messaging;
 using Application.Transactions;
 using BudgetBuddy.Extensions;
-using BudgetBuddy.Infrastructure;
+using BudgetBuddy.Http;
 using Microsoft.AspNetCore.Mvc;
 using SharedKernel;
 
@@ -10,7 +12,7 @@ namespace BudgetBuddy.Endpoints.Transactions;
 internal sealed class UpdateTransactionEndpoint : IEndpoint
 {
     internal sealed record UpdateTransactionRequest(
-        int TransactionTypeId,
+        TransactionType TransactionType,
         Guid AccountId,
         string Description,
         decimal Amount,
@@ -30,7 +32,7 @@ internal sealed class UpdateTransactionEndpoint : IEndpoint
                 new UpdateTransactionCommand(
                     transactionId,
                     request.AccountId,
-                    request.TransactionTypeId,
+                    request.TransactionType,
                     request.Description,
                     request.Amount,
                     request.Date,
@@ -39,7 +41,7 @@ internal sealed class UpdateTransactionEndpoint : IEndpoint
                 cancellationToken).ConfigureAwait(false);
             return result.Match(Results.NoContent, CustomResults.Problem);
         })
-        .Accepts<UpdateTransactionCommand>("application/json")
+        .HasPermission(Permissions.TransactionsWrite)
         .WithTags(Tags.Transactions)
         .Produces(StatusCodes.Status204NoContent)
         .ProducesProblem(StatusCodes.Status404NotFound);

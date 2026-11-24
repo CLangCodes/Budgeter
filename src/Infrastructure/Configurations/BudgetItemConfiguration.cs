@@ -2,7 +2,7 @@ using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Data.Configuration;
+namespace Infrastructure.Configurations;
 
 internal sealed class BudgetItemConfiguration : IEntityTypeConfiguration<BudgetItem>
 {

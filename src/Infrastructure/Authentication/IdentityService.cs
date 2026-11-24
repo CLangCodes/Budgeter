@@ -1,5 +1,5 @@
 using Application.Abstractions.Authentication;
-using Application.Users.GetById;
+using Application.Users;
 using Domain.Users;
 using Infrastructure.Authorization;
 using Infrastructure.Identity;
@@ -49,7 +49,15 @@ internal sealed class IdentityService(
         };
         var registrationResult = await userManager.CreateAsync(user, password);
         if (!registrationResult.Succeeded)
-            return Result.Failure<Guid>(UserErrors.RegistrationFailed);
+        {
+            bool duplicate = registrationResult.Errors.Any(e =>
+                e.Code is nameof(IdentityErrorDescriber.DuplicateEmail)
+                       or nameof(IdentityErrorDescriber.DuplicateUserName));
+
+            return Result.Failure<Guid>(duplicate
+                ? UserErrors.EmailNotUnique
+                : UserErrors.RegistrationFailed);
+        }
 
         var roleAssignResult = await userManager.AddToRoleAsync(user, Roles.Member);
         return roleAssignResult.Succeeded ?

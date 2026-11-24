@@ -1,6 +1,8 @@
-using BudgetBuddy.Endpoints;
-using Application.Transactions;
+using Application.Abstractions.Authorization;
 using Application.Abstractions.Messaging;
+using Application.Transactions;
+using BudgetBuddy.Extensions;
+using BudgetBuddy.Http;
 using SharedKernel;
 
 namespace BudgetBuddy.Endpoints.Transactions;
@@ -9,23 +11,17 @@ internal sealed class GetTransactionByIdEndpoint : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapGet("/v1/transactions/{transactionId:int}", async (HttpContext httpContext,
+        app.MapGet("/v1/transactions/{transactionId:int}", async (
         int transactionId,
         IQueryHandler<GetTransactionByIdQuery, GetTransactionResult> handler,
         CancellationToken cancellationToken) =>
         {
-            try
-            {
-                var result = await handler.Handle(
-                    new GetTransactionByIdQuery(transactionId), cancellationToken).ConfigureAwait(false);
-                return Results.Ok(result.Value);                
-            } catch
-            {
-                return Results.Problem("There was a problem retrieving Transactions.");
-            }
+            Result<GetTransactionResult> result = await handler.Handle(
+                new GetTransactionByIdQuery(transactionId), cancellationToken).ConfigureAwait(false);
+            return result.Match(Results.Ok, CustomResults.Problem);
         })
+        .HasPermission(Permissions.TransactionsRead)
         .WithTags(Tags.Transactions)
-        .Accepts<GetTransactionByIdQuery>("application/json")
         .Produces<GetTransactionResult>()
         .ProducesProblem(StatusCodes.Status404NotFound);
     }

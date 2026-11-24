@@ -1,9 +1,8 @@
 using Application.Abstractions.Authentication;
 using Application.Abstractions.Messaging;
-using Application.Users.GetById;
 using SharedKernel;
 
-namespace Application.Users.Login;
+namespace Application.Users.Update;
 
 public sealed record UpdateUserCommand(
     string UserId, 

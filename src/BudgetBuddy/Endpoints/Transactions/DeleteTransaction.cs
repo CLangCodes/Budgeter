@@ -1,7 +1,8 @@
+using Application.Abstractions.Authorization;
 using Application.Abstractions.Messaging;
 using Application.Transactions;
 using BudgetBuddy.Extensions;
-using BudgetBuddy.Infrastructure;
+using BudgetBuddy.Http;
 using SharedKernel;
 
 namespace BudgetBuddy.Endpoints.Transactions;
@@ -20,8 +21,8 @@ internal sealed class DeleteTransactionEndpoint : IEndpoint
                 cancellationToken).ConfigureAwait(false);
             return result.Match(Results.NoContent, CustomResults.Problem);
         })
+        .HasPermission(Permissions.TransactionsWrite)
         .WithTags(Tags.Transactions)
-        .Accepts<DeleteTransactionCommand>("application/json")
         .Produces(StatusCodes.Status204NoContent)
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .ProducesProblem(StatusCodes.Status404NotFound);

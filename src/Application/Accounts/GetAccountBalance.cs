@@ -18,19 +18,16 @@ internal sealed class GetAccountBalanceQueryHandler(IApplicationDbContext contex
         GetAccountBalanceQuery query, 
         CancellationToken cancellationToken)
     {
-        GetAccountBalanceResult? account = await context.Accounts
+        // Load the transactions so the domain's Account.Balance rule does the calculation.
+        // (Projecting a.Balance in SQL silently drops the Include, and SQLite cannot Sum decimals.)
+        Account? account = await context.Accounts
             .AsNoTracking()
-            .Where(a => a.AccountId == query.AccountId)
-            .Include(account => account.Transactions)
-            .Select(a => new GetAccountBalanceResult(
-                a.Balance,
-                dateTimeProvider.UtcNow
-            ))
-            .SingleOrDefaultAsync(cancellationToken);
+            .Include(a => a.Transactions)
+            .SingleOrDefaultAsync(a => a.AccountId == query.AccountId, cancellationToken);
         if (account is null)
         {
             return Result.Failure<GetAccountBalanceResult>(AccountErrors.NotFound(query.AccountId));
         }
-        return account;
+        return new GetAccountBalanceResult(account.Balance, dateTimeProvider.UtcNow);
     }
 }

@@ -6,7 +6,7 @@ using SharedKernel;
 namespace Application.Transactions;
 
 public sealed record CreateTransactionCommand(
-    int TransactionTypeId,
+    TransactionType TransactionType,
     Guid AccountId,
     string Description,
     decimal Amount,
@@ -20,7 +20,7 @@ internal sealed class CreateTransactionCommandHandler(
     public async Task<Result<int>> Handle(CreateTransactionCommand command, CancellationToken cancellationToken)
     {
         Transaction transaction = Transaction.Create(
-            command.TransactionTypeId,
+            command.TransactionType,
             command.AccountId,
             command.Description ?? string.Empty,
             command.Amount,

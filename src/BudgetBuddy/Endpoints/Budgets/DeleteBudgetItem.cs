@@ -1,7 +1,8 @@
+using Application.Abstractions.Authorization;
 using Application.Abstractions.Messaging;
 using Application.Budgets;
 using BudgetBuddy.Extensions;
-using BudgetBuddy.Infrastructure;
+using BudgetBuddy.Http;
 using SharedKernel;
 
 namespace BudgetBuddy.Endpoints.Budgets;
@@ -20,6 +21,7 @@ internal sealed class DeleteBudgetItemEndpoint : IEndpoint
                 cancellationToken).ConfigureAwait(false);
             return result.Match(Results.NoContent, CustomResults.Problem);
         })
+        .HasPermission(Permissions.BudgetsWrite)
         .WithTags(Tags.Budgets)
         .Produces(StatusCodes.Status204NoContent)
         .ProducesProblem(StatusCodes.Status404NotFound);

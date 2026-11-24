@@ -2,7 +2,7 @@ using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Data.Configuration;
+namespace Infrastructure.Configurations;
 
 internal sealed class CategoryConfiguration : IEntityTypeConfiguration<Category>
 {
@@ -144,7 +144,8 @@ internal sealed class CategoryConfiguration : IEntityTypeConfiguration<Category>
         );
     }
 
-    private static Category SystemDefault(int sequence, string groupName, string name, string description) => new()
+    // Anonymous objects let EF seed through the entity's private setters.
+    private static object SystemDefault(int sequence, string groupName, string name, string description) => new
     {
         CategoryId = new Guid($"{SystemDefaultIdPrefix}{sequence:D12}"),
         IsUserDefined = false,

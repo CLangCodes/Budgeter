@@ -30,19 +30,12 @@ internal sealed class UpdateBudgetItemCommandHandler(IApplicationDbContext conte
         if (budgetItem is null)
             {return Result.Failure(BudgetItemErrors.NotFound(command.BudgetItemId));}
 
-        Result recurrence = BudgetItem.ValidateRecurrence(
-            command.RecurrenceInterval,
-            command.StartTrackingDate,
-            command.EndDate);
-        if (recurrence.IsFailure)
-            {return recurrence;}
-
         bool categoryExists = await context.Categories
             .AnyAsync(c => c.CategoryId == command.CategoryId, cancellationToken);
         if (!categoryExists)
             {return Result.Failure(CategoryErrors.NotFound(command.CategoryId));}
 
-        budgetItem.Update(
+        Result update = budgetItem.Update(
             command.CategoryId,
             command.AccountId,
             command.BudgetItemName,
@@ -52,6 +45,8 @@ internal sealed class UpdateBudgetItemCommandHandler(IApplicationDbContext conte
             command.StartTrackingDate,
             command.EndDate,
             command.Amount);
+        if (update.IsFailure)
+            {return update;}
 
         await context.SaveChangesAsync(cancellationToken);
 

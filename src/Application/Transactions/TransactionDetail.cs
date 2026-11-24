@@ -1,9 +1,10 @@
+using Domain.Models;
 namespace Application.Transactions;
 
 public sealed record TransactionDetail(
     int Id, 
     Guid AccountId, 
-    int TransactionTypeId, 
+    TransactionType TransactionType, 
     string Description, 
     decimal Amount, 
     DateOnly Date, 

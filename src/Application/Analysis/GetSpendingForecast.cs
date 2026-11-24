@@ -1,5 +1,6 @@
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
+using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
@@ -28,12 +29,17 @@ internal sealed class GetSpendingForecastQueryHandler(
         CancellationToken cancellationToken)
     {
         List<SpendingForecastResult> forecasts = new List<SpendingForecastResult>();
-        decimal accountBalance = await context.Accounts
+        // Load the transactions so the domain's Account.Balance rule does the calculation.
+        // (Projecting a.Balance in SQL silently drops the Include, and SQLite cannot Sum decimals.)
+        Account? account = await context.Accounts
             .AsNoTracking()
-            .Where(a => a.AccountId == query.AccountId)
-            .Include(account => account.Transactions)
-            .Select(a => a.Balance)
-            .SingleOrDefaultAsync(cancellationToken);
+            .Include(a => a.Transactions)
+            .SingleOrDefaultAsync(a => a.AccountId == query.AccountId, cancellationToken);
+
+        if (account is null)
+        {
+            return Result.Failure<GetSpendingForecastResult>(AccountErrors.NotFound(query.AccountId));
+        }
 
         var budgetItems = await context.BudgetItems
             .AsNoTracking()
@@ -52,7 +58,7 @@ internal sealed class GetSpendingForecastQueryHandler(
                             ))
             .OrderBy(o => o.Date);
 
-        var balance = accountBalance;
+        decimal balance = account.Balance;
         forecasts.Add(new SpendingForecastResult(
             DateOnly.FromDateTime(dateTimeProvider.UtcNow), 
             0m, 

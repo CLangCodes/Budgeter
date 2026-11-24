@@ -1,3 +1,4 @@
+using Domain.Models;
 using SharedKernel;
 using Application.Abstractions.Messaging;
 using Microsoft.EntityFrameworkCore;
@@ -35,7 +36,7 @@ internal sealed class GetTransactionsQueryHandler(IApplicationDbContext context)
             .Select(t => new TransactionDetail(
                 t.Id,
                 t.AccountId ?? Guid.Empty,
-                t.TransactionTypeId,
+                t.TransactionType,
                 t.Description,
                 t.Amount,
                 t.Date,

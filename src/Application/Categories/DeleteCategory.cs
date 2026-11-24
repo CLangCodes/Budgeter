@@ -17,8 +17,9 @@ internal sealed class DeleteCategoryCommandHandler(IApplicationDbContext context
 
         if (category is null)
             {return Result.Failure(CategoryErrors.NotFound(command.CategoryId));}
-        if (!category.IsUserDefined)
-            {return Result.Failure(CategoryErrors.NotUserDefined(command.CategoryId));}
+        Result canDelete = category.CanDelete();
+        if (canDelete.IsFailure)
+            {return canDelete;}
         context.Categories.Remove(category);
         
         await context.SaveChangesAsync(cancellationToken);

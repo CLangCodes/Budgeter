@@ -1,9 +1,10 @@
+using Application.Abstractions.Authorization;
 using Application.Abstractions.Messaging;
-using Application.Users.GetById;
+using Application.Users;
 using SharedKernel;
 using BudgetBuddy.Extensions;
-using BudgetBuddy.Infrastructure;
-using Application.Users.Login;
+using BudgetBuddy.Http;
+using Application.Users.Update;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BudgetBuddy.Endpoints.Users;

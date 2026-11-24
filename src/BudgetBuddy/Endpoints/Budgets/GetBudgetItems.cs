@@ -1,7 +1,8 @@
+using Application.Abstractions.Authorization;
 using Application.Abstractions.Messaging;
 using Application.Budgets;
 using BudgetBuddy.Extensions;
-using BudgetBuddy.Infrastructure;
+using BudgetBuddy.Http;
 using SharedKernel;
 
 namespace BudgetBuddy.Endpoints.Budgets;
@@ -18,6 +19,7 @@ internal sealed class GetBudgetItemsEndpoint : IEndpoint
                 new GetBudgetItemsQuery(), cancellationToken).ConfigureAwait(false);
             return result.Match(Results.Ok, CustomResults.Problem);
         })
+        .HasPermission(Permissions.BudgetsRead)
         .WithTags(Tags.Budgets)
         .Produces<GetBudgetItemsResult>();
     }

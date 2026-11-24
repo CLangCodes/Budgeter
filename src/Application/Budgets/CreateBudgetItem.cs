@@ -23,19 +23,12 @@ internal sealed class CreateBudgetItemCommandHandler(
 {
     public async Task<Result<Guid>> Handle(CreateBudgetItemCommand command, CancellationToken cancellationToken)
     {
-        Result recurrence = BudgetItem.ValidateRecurrence(
-            command.RecurrenceInterval,
-            command.StartTrackingDate,
-            command.EndDate);
-        if (recurrence.IsFailure)
-            {return Result.Failure<Guid>(recurrence.Error);}
-
         bool categoryExists = await context.Categories
             .AnyAsync(c => c.CategoryId == command.CategoryId, cancellationToken);
         if (!categoryExists)
             {return Result.Failure<Guid>(CategoryErrors.NotFound(command.CategoryId));}
 
-        BudgetItem budgetItem = BudgetItem.Create(
+        Result<BudgetItem> created = BudgetItem.Create(
             command.CategoryId,
             command.AccountId,
             command.BudgetItemName,
@@ -46,7 +39,10 @@ internal sealed class CreateBudgetItemCommandHandler(
             command.EndDate,
             command.Amount
         );
+        if (created.IsFailure)
+            {return Result.Failure<Guid>(created.Error);}
 
+        BudgetItem budgetItem = created.Value;
         context.BudgetItems.Add(budgetItem);
         await context.SaveChangesAsync(cancellationToken);
         return budgetItem.BudgetItemId;

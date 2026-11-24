@@ -1,7 +1,8 @@
+using Application.Abstractions.Authorization;
 using Application.Abstractions.Messaging;
 using Application.Accounts;
 using BudgetBuddy.Extensions;
-using BudgetBuddy.Infrastructure;
+using BudgetBuddy.Http;
 using SharedKernel;
 
 namespace BudgetBuddy.Endpoints.Accounts;
@@ -19,6 +20,7 @@ internal sealed class GetAccountByIdEndpoint : IEndpoint
                 new GetAccountByIdQuery(accountId), cancellationToken).ConfigureAwait(false);
             return result.Match(Results.Ok, CustomResults.Problem);
         })
+        .HasPermission(Permissions.AccountsRead)
         .WithTags(Tags.Accounts)
         .Produces<GetAccountResult>()
         .ProducesProblem(StatusCodes.Status404NotFound);

@@ -24,12 +24,12 @@ internal sealed class UpdateCategoryCommandHandler(IApplicationDbContext context
 
         if (category is null)
             {return Result.Failure(CategoryErrors.NotFound(command.CategoryId));}
-        if (!category.IsUserDefined)
-            {return Result.Failure(CategoryErrors.NotUserDefined(command.CategoryId));}
-        category.Update(
+        Result update = category.Update(
             command.CategoryGroupName,
             command.CategoryName,
             command.Description);
+        if (update.IsFailure)
+            {return update;}
 
         await context.SaveChangesAsync(cancellationToken);
 

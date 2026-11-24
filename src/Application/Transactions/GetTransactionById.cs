@@ -10,7 +10,7 @@ public sealed record GetTransactionByIdQuery(int TransactionId) : IQuery<GetTran
 public sealed record GetTransactionResult(
     int TransactionId, 
     Guid AccountId,
-    int TransactionTypeId,
+    TransactionType TransactionType,
     string Description,
     decimal Amount,
     DateOnly Date,
@@ -30,7 +30,7 @@ internal sealed class GetTransactionByIdQueryHandler(IApplicationDbContext conte
             .Select(transaction => new GetTransactionResult(
                 transaction.Id,
                 transaction.AccountId ?? Guid.Empty,
-                transaction.TransactionTypeId,
+                transaction.TransactionType,
                 transaction.Description,
                 transaction.Amount,
                 transaction.Date,

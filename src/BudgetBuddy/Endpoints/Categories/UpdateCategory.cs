@@ -1,7 +1,8 @@
+using Application.Abstractions.Authorization;
 using Application.Abstractions.Messaging;
 using Application.Categories;
 using BudgetBuddy.Extensions;
-using BudgetBuddy.Infrastructure;
+using BudgetBuddy.Http;
 using Microsoft.AspNetCore.Mvc;
 using SharedKernel;
 
@@ -34,7 +35,7 @@ internal sealed class UpdateCategoryEndpoint : IEndpoint
                 cancellationToken).ConfigureAwait(false);
             return result.Match(Results.NoContent, CustomResults.Problem);
         })
-        .Accepts<UpdateCategoryCommand>("application/json")
+        .HasPermission(Permissions.CategoriesWrite)
         .WithTags(Tags.Categories)
         .Produces(StatusCodes.Status204NoContent)
         .ProducesProblem(StatusCodes.Status404NotFound);

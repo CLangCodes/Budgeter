@@ -1,4 +1,4 @@
-using Application.Users.GetById;
+using Application.Users;
 using SharedKernel;
 
 namespace Application.Abstractions.Authentication;

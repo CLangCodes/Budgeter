@@ -9,7 +9,7 @@ namespace Application.Transactions;
 public sealed record UpdateTransactionCommand(
     int TransactionId,
     Guid AccountId,
-    int TransactionTypeId, 
+    TransactionType TransactionType, 
     string Description, 
     decimal Amount, 
     DateOnly Date, 
@@ -27,7 +27,7 @@ internal sealed class UpdateTransactionCommandHandler(IApplicationDbContext cont
         if (transaction is null)
             {return Result.Failure(TransactionErrors.NotFound(command.TransactionId));}
         transaction.Update(
-            command.TransactionTypeId,
+            command.TransactionType,
             command.AccountId,
             command.Description,
             command.Amount,

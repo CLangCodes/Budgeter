@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Infrastructure.Identity;
 
-namespace Infrastructure.Data.Configuration;
+namespace Infrastructure.Configurations;
 
 internal sealed class ApplicationUserConfiguration : IEntityTypeConfiguration<ApplicationUser>
 {

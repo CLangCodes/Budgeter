@@ -1,43 +1,36 @@
 using Application;
 using BudgetBuddy;
-using Infrastructure;
 using BudgetBuddy.Extensions;
-using Scalar.AspNetCore;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using HealthChecks.UI.Client;
-using Infrastructure.Data;
+using Infrastructure;
 using Infrastructure.Extensions;
-using Microsoft.AspNetCore.Identity;
-using Infrastructure.Identity;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddInfrastructure(builder.Configuration)
     .AddApplication()
     .AddServer();
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-// builder.Services.AddOpenApi();
-
-// builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
 var app = builder.Build();
 app.MapEndpoints();
 app.ApplyMigrations();
-await app.SeedIdentityRoles();
+await app.SeedIdentityRolesAsync();
 
-app.MapHealthChecks("/health", new HealthCheckOptions{
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-});
+}).AllowAnonymous();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.MapOpenApi().AllowAnonymous();
     app.MapScalarApiReference(options =>
     {
         options.WithTheme(ScalarTheme.Mars);
-    });
+    }).AllowAnonymous();
 }
 app.UseAuthentication();
 app.UseAuthorization();

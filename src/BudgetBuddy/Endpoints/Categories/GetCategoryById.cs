@@ -1,5 +1,9 @@
-using Application.Categories;
+using Application.Abstractions.Authorization;
 using Application.Abstractions.Messaging;
+using Application.Categories;
+using BudgetBuddy.Extensions;
+using BudgetBuddy.Http;
+using SharedKernel;
 
 namespace BudgetBuddy.Endpoints.Categories;
 
@@ -7,23 +11,17 @@ internal sealed class GetCategoryByIdEndpoint : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapGet("/v1/categories/{categoryId:Guid}", async (HttpContext httpContext,
+        app.MapGet("/v1/categories/{categoryId:Guid}", async (
         Guid categoryId,
         IQueryHandler<GetCategoryByIdQuery, GetCategoryResult> handler,
         CancellationToken cancellationToken) =>
         {
-            try
-            {
-                var result = await handler.Handle(
-                    new GetCategoryByIdQuery(categoryId), cancellationToken).ConfigureAwait(false);
-                return Results.Ok(result.Value);                
-            } catch
-            {
-                return Results.Problem($"There was a problem retrieving the Category with id: {categoryId}.");
-            }
+            Result<GetCategoryResult> result = await handler.Handle(
+                new GetCategoryByIdQuery(categoryId), cancellationToken).ConfigureAwait(false);
+            return result.Match(Results.Ok, CustomResults.Problem);
         })
+        .HasPermission(Permissions.CategoriesRead)
         .WithTags(Tags.Categories)
-        .Accepts<GetCategoryByIdQuery>("application/json")
         .Produces<GetCategoryResult>()
         .ProducesProblem(StatusCodes.Status404NotFound);
     }

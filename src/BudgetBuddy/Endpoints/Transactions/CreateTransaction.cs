@@ -1,26 +1,44 @@
+using Domain.Models;
+using Application.Abstractions.Authorization;
 using Application.Abstractions.Messaging;
 using Application.Transactions;
 using BudgetBuddy.Extensions;
-using BudgetBuddy.Infrastructure;
+using BudgetBuddy.Http;
 using SharedKernel;
 
 namespace BudgetBuddy.Endpoints.Transactions;
 
 internal sealed class CreateTransactionEndpoint : IEndpoint
 {
+    public sealed record Request(
+        TransactionType TransactionType,
+        Guid AccountId,
+        string Description,
+        decimal Amount,
+        DateOnly Date,
+        Guid? CategoryId);
+
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
         app.MapPost("/v1/transactions", async (
-        CreateTransactionCommand command,
-        ICommandHandler<CreateTransactionCommand, int> handler, 
+        Request request,
+        ICommandHandler<CreateTransactionCommand, int> handler,
         CancellationToken cancellationToken) =>
         {
+            var command = new CreateTransactionCommand(
+                request.TransactionType,
+                request.AccountId,
+                request.Description,
+                request.Amount,
+                request.Date,
+                request.CategoryId);
+
             Result<int> result = await handler.Handle(
-                command, 
+                command,
                 cancellationToken).ConfigureAwait(false);
             return result.Match(Results.Ok, CustomResults.Problem);
         })
-        .Accepts<CreateTransactionCommand>("application/json")
+        .HasPermission(Permissions.TransactionsWrite)
         .WithTags(Tags.Transactions)
         .Produces<int>()
         .ProducesProblem(StatusCodes.Status400BadRequest);
